@@ -17,7 +17,7 @@ Preflight will:
 - Highlight potential integration risks
 - Generate an analysis report
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - Vite
@@ -28,6 +28,6 @@ Preflight will:
 - Node.js
 - Express.js
 
-### Compute & AI
+### Lambda & AI
 - AWS Lambda
 - OpenAI API
