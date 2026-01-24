@@ -1,7 +1,7 @@
+# Preflight
+
 **Preflight** is a full-stack developer tool that evaluates API integrations.  
 It analyzes API schemas, sample payloads, and internal requirements to detect breaking changes, mismatches, and potential risk areas.
-
----
 
 ## What Preflight Does
 
@@ -16,8 +16,6 @@ Preflight will:
 - Identify missing or mismatched fields
 - Highlight potential integration risks
 - Generate an analysis report
-
----
 
 ## 🛠️ Tech Stack
 
