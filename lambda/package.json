@@ -1,0 +1,14 @@
+{
+  "name": "preflight-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda function for my senior capstone project 'Preflight'",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Erick Lopez",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
