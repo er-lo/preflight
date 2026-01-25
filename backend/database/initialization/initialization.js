@@ -1,5 +1,6 @@
 const fs = require('fs');
 const dbHelper = require('../database')
+const { LOG_PREFIXES } = require('../../constants/constants')
 
 async function initializePostgresDatabase() {
   try {
@@ -7,12 +8,12 @@ async function initializePostgresDatabase() {
     const pool = await dbHelper.getPostgresPool();
     const client = await pool.connect();
 
-    console.log('[DB INITIALIZATION] STARTING DB SET UP')
+    console.log(`${LOG_PREFIXES.DB_INIT} STARTING DB SET UP`)
     await client.query(migration);
-    console.log('[DB INITIALIZATION] DB SET UP COMPLETE')
+    console.log(`${LOG_PREFIXES.DB_INIT} DB SET UP COMPLETE`)
     return true;
   } catch (error) {
-    console.log(`[DB INITIALIZATION] Error: ${error.message}`);
+    console.log(`${LOG_PREFIXES.DB_INIT} Error: ${error.message}`);
     return false;
   } finally {
     dbHelper.closePool();
