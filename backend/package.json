@@ -10,8 +10,12 @@
   "license": "MIT",
   "description": "API backend for my senior capstone project 'Preflight'.",
   "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "nodemon": "^3.1.11",
     "pg": "^8.17.2"
   }
 }

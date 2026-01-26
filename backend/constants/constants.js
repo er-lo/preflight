@@ -1,6 +1,8 @@
 exports.LOG_PREFIXES = Object.freeze({
   SERVER_START: '[SERVER START]',
   DB_INIT: '[DB INITIALIZATION]',
+  GET_ANALYSIS: '[GET ANALYSIS]',
+  POST_ANALYSIS: '[POST ANALYSIS]',
 });
 
 exports.JOB_STATUS = Object.freeze({
