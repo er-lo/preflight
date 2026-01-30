@@ -3,6 +3,7 @@ exports.LOG_PREFIXES = Object.freeze({
   DB_INIT: '[DB INITIALIZATION]',
   GET_ANALYSIS: '[GET ANALYSIS]',
   POST_ANALYSIS: '[POST ANALYSIS]',
+  CREATE_ANALYSIS_DB: '[DB CREATE]',
 });
 
 exports.JOB_STATUS = Object.freeze({
