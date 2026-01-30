@@ -6,7 +6,7 @@ const analysisController = require('../controllers/analysis.controller');
 
 const jsonParser = bodyParser.json();
 
-router.get('/getAnalysis', jsonParser, analysisController.getAnalysisRecord);
-router.post('/postAnalysis', jsonParser, analysisController.postAnalysisRecord);
+router.get('/', analysisController.getAnalysis);
+router.post('/', jsonParser, analysisController.createAnalysis);
 
 module.exports = router;
