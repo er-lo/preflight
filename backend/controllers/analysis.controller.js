@@ -1,8 +1,12 @@
-const { LOG_PREFIXES } = require('../constants/constants')
+const { LOG_PREFIXES } = require('../constants/constants');
+const analysisService = require('../service/analysis.service');
 
-async function getAnalysisRecord(req, res) {
+async function getAnalysis(req, res) {
   try {
-    console.log(`${LOG_PREFIXES.GET_ANALYSIS} Starting Analysis Retrieval Process`);
+    if (!req.query.id) {
+      throw new Error('No analysis record ID was provided.')
+    }
+    console.log(`${LOG_PREFIXES.GET_ANALYSIS} Starting Analysis Retrieval Process for record: ${req.query.id}`);
 
     const results = {
       statusCode: 200,
@@ -19,7 +23,7 @@ async function getAnalysisRecord(req, res) {
     const results = {
       statusCode: 500,
       body: {
-        message: 'failure',
+        message: `Error: ${error.message}`,
       }
     };
     
@@ -27,14 +31,30 @@ async function getAnalysisRecord(req, res) {
   }
 };
 
-async function postAnalysisRecord(req, res) {
+async function createAnalysis(req, res) {
   try {
+    console.log(`Incoming Request Body: ${JSON.stringify(req.body)}`);
     console.log(`${LOG_PREFIXES.POST_ANALYSIS} Starting Analysis Process`);
+    
+    const result = await analysisService.processAnalysisCreation(req.body);
+    if(!result.success) {
+      const results = {
+        statusCode: 500,
+        body: {
+          message: result.message,
+        }
+      }
+
+      res.status(results.statusCode).json(results.body);
+    }
+
     const results = {
       statusCode: 200,
       body: {
-        data: {},
-        message: 'success - POST',
+        data: {
+          jobId: result.jobId
+        },
+        message: result.message,
       }
     };
 
@@ -52,5 +72,5 @@ async function postAnalysisRecord(req, res) {
   }
 };
 
-exports.getAnalysisRecord = getAnalysisRecord;
-exports.postAnalysisRecord = postAnalysisRecord;
+exports.getAnalysis = getAnalysis;
+exports.createAnalysis = createAnalysis;
