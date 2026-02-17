@@ -10,8 +10,7 @@
   "license": "MIT",
   "description": "API backend for my senior capstone project 'Preflight'.",
   "dependencies": {
-    "aws4": "^1.13.2",
-    "axios": "^1.13.5",
+    "@aws-sdk/client-lambda": "^3.991.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
