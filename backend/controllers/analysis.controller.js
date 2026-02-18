@@ -9,7 +9,7 @@ async function getAnalysis(req, res) {
     log(GET_ANALYSIS, `Starting Analysis Retrieval Process for record: ${req.query.id}`)
 
     const result = await analysisService.processAnalysisRetrieval(req.query);
-    if(!result.success) {
+    if (!result.success) {
       const results = {
         statusCode: 500,
         body: {
@@ -20,12 +20,10 @@ async function getAnalysis(req, res) {
       res.status(results.statusCode).json(results.body);
     }
 
-    // TODO: add checks for the different statuses
-
     const results = {
       statusCode: 200,
       body: {
-        data: result.data,
+        data: result?.data,
         message: result.message,
       }
     };
@@ -40,7 +38,7 @@ async function getAnalysis(req, res) {
         message: `Error: ${error.message}`,
       }
     };
-    
+
     res.status(results.statusCode).json(results.body);
   }
 };
@@ -49,9 +47,9 @@ async function createAnalysis(req, res) {
   try {
     log(POST_ANALYSIS, `Incoming Request Body: ${JSON.stringify(req.body)}`)
     log(POST_ANALYSIS, `Starting Analysis Creation Process`)
-    
+
     const result = await analysisService.processAnalysisCreation(req.body);
-    if(!result.success) {
+    if (!result.success) {
       const results = {
         statusCode: 500,
         body: {
