@@ -1,5 +1,8 @@
 const dbClient = require('./database.client');
-const { JOB_STATUS, LOG_PREFIXES } = require('../constants/constants')
+const { JOB_STATUS, LOG_PREFIXES } = require('../constants/constants');
+const { log } = require('../utils/log');
+
+const { DB_CREATE, DB_RETRIEVE } = LOG_PREFIXES;
 
 async function retrieveAnalysisStatus(id) {
   const pool = await dbClient.getPostgresPool();
@@ -16,15 +19,14 @@ async function retrieveAnalysisStatus(id) {
 
     const result = await client.query(query, values);
 
-    // TODO: update log
     if (result.rows.length) {
-      console.log(`${LOG_PREFIXES.CREATE_ANALYSIS_DB} Analysis job was inserted in the DB with id: ${result.rows[0].job_id}`);
+      log(DB_RETRIEVE, `Analysis job was retrieved from the DB with id: ${result.rows[0].job_id}`);
     }
 
     return result.rows[0];
 
   } catch (error) {
-    console.log(`${LOG_PREFIXES.CREATE_ANALYSIS_DB} Error: ${error.message}`)
+    log(DB_RETRIEVE, `Error: ${error.message}`)
     return null;
   } finally {
     await client.release();
@@ -46,15 +48,14 @@ async function retrieveAnalysisResult(id) {
 
     const result = await client.query(query, values);
 
-    // TODO: update log
     if (result.rows.length) {
-      console.log(`${LOG_PREFIXES.CREATE_ANALYSIS_DB} Analysis job was inserted in the DB with id: ${result.rows[0].job_id}`);
+      log(DB_RETRIEVE, `Analysis result was retrieved from the DB with id: ${result.rows[0].job_id}`);
     }
 
     return result.rows[0];
 
   } catch (error) {
-    console.log(`${LOG_PREFIXES.CREATE_ANALYSIS_DB} Error: ${error.message}`)
+    log(DB_RETRIEVE, `Error: ${error.message}`)
     return null;
   } finally {
     await client.release();
@@ -77,13 +78,13 @@ async function createAnalysisRecord(schema, payload, requirements) {
     const result = await client.query(query, values);
 
     if (result.rows.length) {
-      console.log(`${LOG_PREFIXES.CREATE_ANALYSIS_DB} Analysis job was inserted in the DB with id: ${result.rows[0].job_id}`);
+      log(DB_CREATE, `Analysis job was inserted in the DB with id: ${result.rows[0].job_id}`);
     }
 
     return result.rows[0];
 
   } catch (error) {
-    console.log(`${LOG_PREFIXES.CREATE_ANALYSIS_DB} Error: ${error.message}`)
+    log(DB_CREATE, `Error: ${error.message}`)
     return null;
   } finally {
     await client.release();
