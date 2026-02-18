@@ -4,7 +4,7 @@ const { LOG_PREFIXES } = require('../constants/constants');
 
 const { LAMBDA_INVOKE } = LOG_PREFIXES;
 
-async function lambdaInvoker(schema, payload, requirements){
+async function lambdaInvoker(schema, payload, requirements) {
   if (process.env.NODE_ENVIRONMENT.includes('dev')) {
     const unencodedPayload = {
       schema,
@@ -17,7 +17,7 @@ async function lambdaInvoker(schema, payload, requirements){
     return true;
   }
 
-  try{
+  try {
     const config = {};
     const client = new LambdaClient(config);
 
@@ -45,12 +45,12 @@ async function lambdaInvoker(schema, payload, requirements){
     const response = await client.send(command);
 
     // since we are doing this asynchronously we expect a 202 response
-    if(response.StatusCode != 202) {
+    if (response.StatusCode != 202) {
       throw new Error('There was an issue with invoking the lambda.')
     }
 
     return true;
-  } catch(error) {
+  } catch (error) {
     log(LAMBDA_INVOKE, `Error: ${error.message}`);
     return false;
   }

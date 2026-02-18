@@ -1,7 +1,7 @@
 const { LOG_PREFIXES } = require('../constants/constants');
 
 const maxTagLength = Math.max(
-    ...Object.values(LOG_PREFIXES).map(tag => tag.length)
+  ...Object.values(LOG_PREFIXES).map(tag => tag.length)
 );
 
 const TAG_WIDTH = maxTagLength + 2;

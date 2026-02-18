@@ -8,7 +8,7 @@ async function retrieveAnalysisStatus(id) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
 
-  try{
+  try {
     const query = `
       SELECT *
       FROM analysis_jobs
@@ -37,7 +37,7 @@ async function retrieveAnalysisResult(id) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
 
-  try{
+  try {
     const query = `
       SELECT *
       FROM analysis_results
@@ -66,7 +66,7 @@ async function createAnalysisRecord(schema, payload, requirements) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
 
-  try{
+  try {
     const query = `
       INSERT INTO analysis_jobs (status, schema, request_payload, internal_requirements)
       VALUES ($1, $2, $3, $4)

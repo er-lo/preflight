@@ -11,7 +11,7 @@ async function processAnalysisRetrieval(data) {
 
   // since there is only one value no separate validation process is needed
   log(GET_ANALYSIS, 'Performing request validation..');
-  if (!jobId) 
+  if (!jobId)
     return {
       success: false,
       messsage: 'Invalid request. Ensure jobId is included in the request.',
@@ -30,19 +30,16 @@ async function processAnalysisRetrieval(data) {
     case (JOB_STATUS.PENDING):
       return {
         success: true,
-        completed: false,
         message: 'Analysis has not been started yet.',
       };
     case (JOB_STATUS.IN_PROGRESS):
       return {
         success: true,
-        completed: false,
         message: 'Analysis is still in progress.',
       };
     case (JOB_STATUS.FAILED):
       return {
         success: true,
-        completed: false,
         message: 'There was an issue with the analysis process. Please submit again.',
       }
     default:
