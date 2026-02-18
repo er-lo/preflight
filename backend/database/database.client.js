@@ -1,5 +1,9 @@
 require('dotenv').config();
 const { Pool } = require('pg');
+const { log } = require('../utils/log');
+const { LOG_PREFIXES } = require('../constants/constants');
+
+const { DB_POOL } = LOG_PREFIXES;
 
 let pool;
 
@@ -29,7 +33,7 @@ async function closePool() {
       await pool.end();
       pool = null;
     } catch (error) {
-      console.log(`UNABLE TO END POOL: ${error.message}`);
+      log(DB_POOL, `UNABLE TO END POOL: ${error.message}`);
     }
   }
 }
