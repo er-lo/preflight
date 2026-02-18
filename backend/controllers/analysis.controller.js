@@ -1,9 +1,12 @@
 const { LOG_PREFIXES } = require('../constants/constants');
 const analysisService = require('../service/analysis.service');
+const { log } = require('../utils/log');
+
+const { GET_ANALYSIS, POST_ANALYSIS } = LOG_PREFIXES;
 
 async function getAnalysis(req, res) {
   try {
-    console.log(`${LOG_PREFIXES.GET_ANALYSIS} Starting Analysis Retrieval Process for record: ${req.query.id}`);
+    log(GET_ANALYSIS, `Starting Analysis Retrieval Process for record: ${req.query.id}`)
 
     const result = await analysisService.processAnalysisRetrieval(req.query);
     if(!result.success) {
@@ -29,7 +32,7 @@ async function getAnalysis(req, res) {
 
     res.status(results.statusCode).json(results.body);
   } catch (error) {
-    console.log(`${LOG_PREFIXES.GET_ANALYSIS} Error: ${error.message}`);
+    log(GET_ANALYSIS, `Error: ${error.message}`)
 
     const results = {
       statusCode: 500,
@@ -44,8 +47,8 @@ async function getAnalysis(req, res) {
 
 async function createAnalysis(req, res) {
   try {
-    console.log(`${LOG_PREFIXES.POST_ANALYSIS} Incoming Request Body: ${JSON.stringify(req.body)}`);
-    console.log(`${LOG_PREFIXES.POST_ANALYSIS} Starting Analysis Process`);
+    log(POST_ANALYSIS, `Incoming Request Body: ${JSON.stringify(req.body)}`)
+    log(POST_ANALYSIS, `Starting Analysis Creation Process`)
     
     const result = await analysisService.processAnalysisCreation(req.body);
     if(!result.success) {
@@ -69,9 +72,12 @@ async function createAnalysis(req, res) {
       }
     };
 
+    log(POST_ANALYSIS, 'Process completed successfully.')
+
     res.status(results.statusCode).json(results.body);
   } catch (error) {
     console.log(`${LOG_PREFIXES.POST_ANALYSIS} Error: ${error.message}`);
+    log(POST_ANALYSIS, `Error: ${error.message}`)
     const results = {
       statusCode: 500,
       body: {
