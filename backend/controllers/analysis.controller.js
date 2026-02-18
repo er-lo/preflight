@@ -76,7 +76,6 @@ async function createAnalysis(req, res) {
 
     res.status(results.statusCode).json(results.body);
   } catch (error) {
-    console.log(`${LOG_PREFIXES.POST_ANALYSIS} Error: ${error.message}`);
     log(POST_ANALYSIS, `Error: ${error.message}`)
     const results = {
       statusCode: 500,
