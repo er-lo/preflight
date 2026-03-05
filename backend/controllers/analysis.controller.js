@@ -1,4 +1,4 @@
-const { LOG_PREFIXES } = require('../constants/constants');
+const { LOG_PREFIXES, JOB_STATUS } = require('../constants/constants');
 const analysisService = require('../service/analysis.service');
 const { log } = require('../utils/log');
 
@@ -13,6 +13,7 @@ async function getAnalysis(req, res) {
       const results = {
         statusCode: 500,
         body: {
+          status: result.status,
           message: result.message,
         }
       }
@@ -23,6 +24,7 @@ async function getAnalysis(req, res) {
     const results = {
       statusCode: 200,
       body: {
+        status: result.status,
         data: result?.data,
         message: result.message,
       }
@@ -35,6 +37,7 @@ async function getAnalysis(req, res) {
     const results = {
       statusCode: 500,
       body: {
+        status: JOB_STATUS.FAILED,
         message: `Error: ${error.message}`,
       }
     };

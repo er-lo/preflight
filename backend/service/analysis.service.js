@@ -14,6 +14,7 @@ async function processAnalysisRetrieval(data) {
   if (!jobId)
     return {
       success: false,
+      status: JOB_STATUS.FAILED,
       messsage: 'Invalid request. Ensure jobId is included in the request.',
     };
 
@@ -23,6 +24,7 @@ async function processAnalysisRetrieval(data) {
   if (!jobStatus)
     return {
       success: false,
+      status: JOB_STATUS.FAILED,
       message: 'There was an issue processing your request. Please try again later',
     };
 
@@ -30,16 +32,19 @@ async function processAnalysisRetrieval(data) {
     case (JOB_STATUS.PENDING):
       return {
         success: true,
+        status: JOB_STATUS.PENDING,
         message: 'Analysis has not been started yet.',
       };
     case (JOB_STATUS.IN_PROGRESS):
       return {
         success: true,
+        status: JOB_STATUS.IN_PROGRESS,
         message: 'Analysis is still in progress.',
       };
     case (JOB_STATUS.FAILED):
       return {
         success: true,
+        status: JOB_STATUS.FAILED,
         message: 'There was an issue with the analysis process. Please submit again.',
       }
     default:
@@ -52,6 +57,7 @@ async function processAnalysisRetrieval(data) {
   if (!jobResult)
     return {
       success: false,
+      status: JOB_STATUS.FAILED,
       message: 'There was an issue processing your request. Please try again later',
     };
 
@@ -59,6 +65,7 @@ async function processAnalysisRetrieval(data) {
     success: true,
     completed: true,
     message: 'Request was successful.',
+    status: JOB_STATUS.COMPLETED,
     data: {
       jobId: jobResult.job_id,
       riskLevel: jobResult.risk_level,
