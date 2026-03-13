@@ -1,18 +1,31 @@
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
 const { log } = require('../utils/log');
 const { LOG_PREFIXES } = require('../constants/constants');
+const { sendAnalysisRequest } = require('./axios');
 
 const { LAMBDA_INVOKE } = LOG_PREFIXES;
 
-async function lambdaInvoker(schema, payload, requirements) {
+async function lambdaInvoker(id, schema, payload, requirements) {
   if (process.env.NODE_ENVIRONMENT.includes('dev')) {
+    // TODO: wipe this dev code. I am using this to mimic a request to the lambda
+    // this will be making an axios request to a second server that will act as my lambda during testing
     const unencodedPayload = {
       schema,
       payload,
       requirements,
     };
 
+    log(LAMBDA_INVOKE, 'Sending a mimic request to express server to test AI.');
     log(LAMBDA_INVOKE, `Lambda Payload: ${JSON.stringify(unencodedPayload)}`);
+
+    const aiResult = await sendAnalysisRequest({
+      jobId: id,
+      schema,
+      payload,
+      requirements,
+    });
+
+    log(LAMBDA_INVOKE, `Result from express: ${JSON.stringify(aiResult)}`);
     // return true for local testing.
     return true;
   }

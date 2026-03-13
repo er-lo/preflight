@@ -11,6 +11,7 @@
   "description": "API backend for my senior capstone project 'Preflight'.",
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.991.0",
+    "axios": "^1.13.6",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
