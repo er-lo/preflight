@@ -5,25 +5,16 @@ const { sendAnalysisRequest } = require('./axios');
 
 const { LAMBDA_INVOKE } = LOG_PREFIXES;
 
-async function lambdaInvoker(id, schema, payload, requirements) {
+async function lambdaInvoker(jobId, jobType, body) {
   if (process.env.NODE_ENVIRONMENT.includes('dev')) {
     // TODO: wipe this dev code. I am using this to mimic a request to the lambda
     // this will be making an axios request to a second server that will act as my lambda during testing
-    const unencodedPayload = {
-      schema,
-      payload,
-      requirements,
-    };
+    const unencodedPayload = { jobId, jobType, ...body };
 
     log(LAMBDA_INVOKE, 'Sending a mimic request to express server to test AI.');
     log(LAMBDA_INVOKE, `Lambda Payload: ${JSON.stringify(unencodedPayload)}`);
 
-    const aiResult = await sendAnalysisRequest({
-      jobId: id,
-      schema,
-      payload,
-      requirements,
-    });
+    const aiResult = await sendAnalysisRequest(unencodedPayload);
 
     log(LAMBDA_INVOKE, `Result from express: ${JSON.stringify(aiResult)}`);
     // return true for local testing.
@@ -35,16 +26,12 @@ async function lambdaInvoker(id, schema, payload, requirements) {
     const client = new LambdaClient(config);
 
     // create the payload event to be sent to the lambda
-    const unencodedPayload = {
-      schema,
-      payload,
-      requirements,
-    };
+    const unencodedPayload = { jobId, jobType, ...body };
 
     log(LAMBDA_INVOKE, `Lambda Payload: ${JSON.stringify(unencodedPayload)}`);
 
-    // lambda docs state the payload has to be encoded
-    const lambdaPayload = TextEncoder.encode(unencodedPayload);
+    // lambda docs state the payload has to be encoded bytes (typically JSON string)
+    const lambdaPayload = new TextEncoder().encode(JSON.stringify(unencodedPayload));
 
     // creating the input to create our command
     const input = {

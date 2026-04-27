@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const analysisRouter = require('./routes/analysis.router');
+const toolsRouter = require('./routes/tools.router');
 const dbInitialization = require('./database/initialization/initialization');
 const { log } = require('./utils/log');
 const { LOG_PREFIXES } = require('./constants/constants');
@@ -28,7 +28,7 @@ app.use('/health', (req, res) => {
   res.status(200).send(data);
 });
 
-app.use('/analysis/', analysisRouter);
+app.use('/tools', toolsRouter);
 
 async function startServer() {
   // create db tables upon server start

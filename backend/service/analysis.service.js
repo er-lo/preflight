@@ -100,7 +100,11 @@ async function processAnalysisCreation(data) {
   // invokes the lambda function asynchronously
   // in development environment this will do nothing as I don't want to kick off a lambda everytime i'm testing locally
   log(POST_ANALYSIS, 'Kicking off lambda function for AI analysis..');
-  const lambdaResult = awsUtil.lambdaInvoker(jobId, schema, payload, requirements);
+  const lambdaResult = await awsUtil.lambdaInvoker(jobId.job_id, 'analysis', {
+    schema,
+    payload,
+    requirements,
+  });
   if (!lambdaResult)
     return {
       success: false,

@@ -18,3 +18,43 @@ CREATE TABLE IF NOT EXISTS analysis_results (
     recommendations_json JSONB,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS openapi_from_curl_jobs (
+    job_id SERIAL PRIMARY KEY,
+    status VARCHAR(20) NOT NULL,
+    curl TEXT NOT NULL,
+    expected_request_body_json JSONB,
+    expected_response_body_json JSONB,
+    endpoint_summary TEXT,
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS openapi_from_curl_results (
+    result_id SERIAL PRIMARY KEY,
+    job_id INTEGER NOT NULL REFERENCES openapi_from_curl_jobs(job_id),
+    openapi_format VARCHAR(10) NOT NULL,
+    openapi_spec TEXT NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS endpoint_guide_jobs (
+    job_id SERIAL PRIMARY KEY,
+    status VARCHAR(20) NOT NULL,
+    openapi_format VARCHAR(10) NOT NULL,
+    openapi_spec TEXT NOT NULL,
+    data_goal TEXT NOT NULL,
+    extra_context TEXT,
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS endpoint_guide_results (
+    result_id SERIAL PRIMARY KEY,
+    job_id INTEGER NOT NULL REFERENCES endpoint_guide_jobs(job_id),
+    guide_json JSONB NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
