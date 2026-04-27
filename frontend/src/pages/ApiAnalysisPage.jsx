@@ -37,7 +37,7 @@ export function ApiAnalysisPage() {
   const [pollError, setPollError] = useState(null);
 
   const fetchJob = useCallback(async () => {
-    const data = await apiRequest(`/analysis/?jobId=${encodeURIComponent(activeJobId)}`);
+    const data = await apiRequest(`/tools/api-analysis?jobId=${encodeURIComponent(activeJobId)}`);
     return data;
   }, [activeJobId]);
 
@@ -86,7 +86,7 @@ export function ApiAnalysisPage() {
     setSubmitError(null);
     setSubmitMessage('');
     try {
-      const result = await apiRequest('/analysis/', {
+      const result = await apiRequest('/tools/api-analysis', {
         method: 'POST',
         body: {
           schema,
@@ -116,6 +116,11 @@ export function ApiAnalysisPage() {
     setJob(null);
     setActiveJobId(trimmed);
   };
+
+  const completedIssues = Array.isArray(job?.data?.issues) ? job.data.issues.filter(Boolean) : [];
+  const completedRecommendations = Array.isArray(job?.data?.recommendations)
+    ? job.data.recommendations.filter(Boolean)
+    : [];
 
   return (
     <PageShell
@@ -252,10 +257,10 @@ export function ApiAnalysisPage() {
                   <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
                     Issues
                   </Typography>
-                  {(!job.data?.issues || job.data.issues.length === 0) && (
+                  {completedIssues.length === 0 && (
                     <Typography color="text.secondary">No issues found.</Typography>
                   )}
-                  {job.data?.issues?.map((issue, index) => (
+                  {completedIssues.map((issue, index) => (
                     <Box
                       key={index}
                       sx={{
@@ -267,13 +272,13 @@ export function ApiAnalysisPage() {
                       }}
                     >
                       <Typography variant="caption" color="primary.light" sx={{ fontWeight: 600 }}>
-                        [{issue.severity}] {issue.field}
+                        [{issue?.severity ?? '—'}] {issue?.field ?? '—'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                        {issue.type}
+                        {issue?.type ?? '—'}
                       </Typography>
                       <Typography variant="body2" sx={{ mt: 1, lineHeight: 1.65 }}>
-                        {issue.message}
+                        {issue?.message ?? '—'}
                       </Typography>
                     </Box>
                   ))}
@@ -282,9 +287,9 @@ export function ApiAnalysisPage() {
                     Recommendations
                   </Typography>
                   <Box component="ul" sx={{ pl: 2.25, m: 0 }}>
-                    {job.data?.recommendations?.map((rec, index) => (
+                    {completedRecommendations.map((rec, index) => (
                       <Typography component="li" key={index} variant="body2" sx={{ mb: 1, lineHeight: 1.65 }}>
-                        {rec.recommendation}
+                        {rec?.recommendation ?? String(rec)}
                       </Typography>
                     ))}
                   </Box>
