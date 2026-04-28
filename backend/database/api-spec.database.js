@@ -4,7 +4,8 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_RETRIEVE } = LOG_PREFIXES;
 
-async function createOpenApiFromCurlJob({ curl, expectedRequestBody, expectedResponseBody, endpointSummary }) {
+async function createOpenApiFromCurlJob(body) {
+  const { curl, expectedRequestBody, expectedResponseBody } = body;
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
 
@@ -14,10 +15,9 @@ async function createOpenApiFromCurlJob({ curl, expectedRequestBody, expectedRes
         status,
         curl,
         expected_request_body_json,
-        expected_response_body_json,
-        endpoint_summary
+        expected_response_body_json
       )
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4)
       RETURNING job_id
     `;
 
@@ -26,7 +26,6 @@ async function createOpenApiFromCurlJob({ curl, expectedRequestBody, expectedRes
       curl,
       expectedRequestBody ?? null,
       expectedResponseBody ?? null,
-      endpointSummary ?? null,
     ];
 
     const result = await client.query(query, values);

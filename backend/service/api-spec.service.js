@@ -56,9 +56,8 @@ async function processOpenApiFromCurlRetrieval(query) {
     status: JOB_STATUS.COMPLETED,
     data: {
       jobId: result.job_id,
-      openApiFormat: result.openapi_format,
-      openApiSpec: result.openapi_spec,
-      notes: result.notes,
+      resultJson: result.result_json,
+      resultYaml: result.result_yaml,
     },
   };
 }
