@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TextField, Button, Stack, Alert, Divider, CircularProgress, Box, Typography, Chip } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
 import JsonView from '@uiw/react-json-view';
@@ -38,7 +38,7 @@ function parseJsonResult(value) {
   return JSON.parse(t);
 }
 
-function JsonResult({ label, value, themeMode }) {
+function JsonResult({ label, value }) {
   value = parseJsonResult(value);
   return (
     <Box>
@@ -362,7 +362,7 @@ export function OpenApiFromCurlPage() {
               {job.status === 'COMPLETED' && (
                 <>
                   <Stack spacing={2}>
-                    <JsonResult label="JSON" value={job.data?.resultJson} themeMode={theme.palette.mode} />
+                    <JsonResult label="JSON" value={job.data?.resultJson} />
                     <YamlRawResult label="YAML" value={job.data?.resultYaml} />
                   </Stack>
                 </>
