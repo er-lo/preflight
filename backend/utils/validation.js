@@ -15,9 +15,8 @@ function validateOpenApiFromCurlBody(body) {
 
 function validateEndpointDataGuideBody(body) {
   if (!body || typeof body !== 'object') return false;
-  if (typeof body.curl !== 'string' || !body.curl.trim()) return false;
+  if (typeof body.apiDoc !== 'string' || !body.apiDoc.trim()) return false;
   if (typeof body.dataGoal !== 'string' || !body.dataGoal.trim()) return false;
-  if (typeof body.extraContext !== 'string' && body.extraContext != null) return false;
   return true;
 }
 

@@ -4,7 +4,8 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_RETRIEVE } = LOG_PREFIXES;
 
-async function createEndpointGuideJob({ openApiFormat, openApiSpec, dataGoal, extraContext }) {
+async function createEndpointGuideJob(body) {
+  const { apiDoc, dataGoal, extraContext } = body;
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
 
@@ -12,19 +13,17 @@ async function createEndpointGuideJob({ openApiFormat, openApiSpec, dataGoal, ex
     const query = `
       INSERT INTO endpoint_guide_jobs (
         status,
-        openapi_format,
-        openapi_spec,
+        api_doc,
         data_goal,
         extra_context
       )
-      VALUES ($1, $2, $3, $4, $5)
+      VALUES ($1, $2, $3, $4)
       RETURNING job_id
     `;
 
     const values = [
       JOB_STATUS.PENDING,
-      openApiFormat,
-      openApiSpec,
+      apiDoc,
       dataGoal,
       extraContext ?? null,
     ];

@@ -55,8 +55,7 @@ async function processEndpointGuideRetrieval(query) {
     message: 'Request was successful.',
     status: JOB_STATUS.COMPLETED,
     data: {
-      jobId: result.job_id,
-      guide: result.guide_json,
+      result: result.result,
     },
   };
 }
