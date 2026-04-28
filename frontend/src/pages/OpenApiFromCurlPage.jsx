@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { TextField, Button, Stack, Alert, Divider, CircularProgress, Box, Typography, Chip } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
+import JsonView from '@uiw/react-json-view';
+import { githubDarkTheme } from '@uiw/react-json-view/githubDark';
 import { apiRequest } from '../lib/api';
 import { PageShell } from '../components/PageShell';
 import { SectionCard } from '../components/SectionCard';
@@ -27,6 +29,75 @@ function looksLikeCurl(text) {
   return t.startsWith('curl') || /\bcurl\b/.test(t);
 }
 
+function parseJsonResult(value) {
+  if (value == null) return null;
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return null;
+  const t = value.trim();
+  if (!t) return null;
+  return JSON.parse(t);
+}
+
+function JsonResult({ label, value, themeMode }) {
+  value = parseJsonResult(value);
+  return (
+    <Box>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+        {label}
+      </Typography>
+      <Box
+        sx={{
+          borderRadius: 2,
+          border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.9)}`,
+          bgcolor: (theme) => alpha(theme.palette.common.white, 0.02),
+          p: 1.25,
+          maxHeight: 520,
+          overflow: 'auto',
+        }}
+      >
+        <JsonView
+          value={value}
+          displayDataTypes={false}
+          style={githubDarkTheme}
+          enableClipboard={false}
+          displayObjectSize={false}
+          objectSortKeys={true}
+        />
+      </Box>
+    </Box>
+  );
+}
+
+function YamlRawResult({ label, value }) {
+  return (
+    <Box>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+        {label}
+      </Typography>
+      <Box
+        component="pre"
+        sx={{
+          m: 0,
+          borderRadius: 2,
+          border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.9)}`,
+          bgcolor: (theme) => alpha(theme.palette.common.white, 0.02),
+          p: 1.5,
+          fontFamily:
+            'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+          fontSize: 13,
+          lineHeight: 1.45,
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          maxHeight: 520,
+          overflow: 'auto',
+        }}
+      >
+        {value}
+      </Box>
+    </Box>
+  );
+}
+
 export function OpenApiFromCurlPage() {
   const theme = useTheme();
   const fieldSx = (extra = {}) => ({ ...formFieldSx(theme), ...extra });
@@ -34,11 +105,9 @@ export function OpenApiFromCurlPage() {
   const [curl, setCurl] = useState('');
   const [requestBodyJson, setRequestBodyJson] = useState('');
   const [responseBodyJson, setResponseBodyJson] = useState('');
-  const [endpointSummary, setEndpointSummary] = useState('');
 
   const [error, setError] = useState(null);
   const [info, setInfo] = useState(null);
-  const [lastPayload, setLastPayload] = useState(null);
 
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
@@ -50,19 +119,9 @@ export function OpenApiFromCurlPage() {
   const [pollLoading, setPollLoading] = useState(false);
   const [pollError, setPollError] = useState(null);
 
-  const previewJson = useMemo(() => {
-    if (!lastPayload) return '';
-    const maxCurl = 8000;
-    const c = lastPayload.curl;
-    const curl =
-      c.length > maxCurl ? `${c.slice(0, maxCurl)}\n… [truncated for preview; full command sent to API]` : c;
-    return JSON.stringify({ ...lastPayload, curl }, null, 2);
-  }, [lastPayload]);
-
   const buildPayload = () => {
     setError(null);
     setInfo(null);
-    setLastPayload(null);
 
     if (!curl.trim()) {
       setError('Paste a cURL command.');
@@ -88,10 +147,8 @@ export function OpenApiFromCurlPage() {
       curl: curl.trim(),
       expectedRequestBody: req.value,
       expectedResponseBody: res.value,
-      endpointSummary: endpointSummary.trim() || null,
     };
 
-    setLastPayload(payload);
     return payload;
   };
 
@@ -226,16 +283,6 @@ export function OpenApiFromCurlPage() {
               helperText="A sample successful response helps infer response schema and status semantics."
               sx={fieldSx()}
             />
-            <TextField
-              label="Notes (optional)"
-              placeholder="Auth scheme, idempotency, pagination, or anything else the generator should know."
-              value={endpointSummary}
-              onChange={(e) => setEndpointSummary(e.target.value)}
-              multiline
-              rows={3}
-              fullWidth
-              sx={fieldSx()}
-            />
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
               <Button
                 variant="contained"
@@ -313,60 +360,16 @@ export function OpenApiFromCurlPage() {
               )}
 
               {job.status === 'COMPLETED' && (
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    border: `1px solid ${alpha(theme.palette.divider, 0.9)}`,
-                    bgcolor: alpha(theme.palette.common.white, 0.02),
-                  }}
-                >
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-                    OpenAPI ({job.data?.openApiFormat ?? '—'})
-                  </Typography>
-                  <TextField
-                    value={job.data?.openApiSpec ?? ''}
-                    multiline
-                    minRows={10}
-                    fullWidth
-                    InputProps={{ readOnly: true }}
-                    sx={fieldSx({
-                      '& textarea': {
-                        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-                        fontSize: '0.8125rem',
-                      },
-                    })}
-                  />
-                  {job.data?.notes ? (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
-                      {job.data.notes}
-                    </Typography>
-                  ) : null}
-                </Box>
+                <>
+                  <Stack spacing={2}>
+                    <JsonResult label="JSON" value={job.data?.resultJson} themeMode={theme.palette.mode} />
+                    <YamlRawResult label="YAML" value={job.data?.resultYaml} />
+                  </Stack>
+                </>
               )}
             </Box>
           )}
         </SectionCard>
-
-        {lastPayload && (
-          <>
-            <SectionCard
-              title="Request body preview"
-              description="This is the JSON body sent to POST /tools/openapi-from-curl."
-            >
-              <TextField
-                value={previewJson}
-                multiline
-                rows={14}
-                fullWidth
-                InputProps={{ readOnly: true }}
-                sx={fieldSx({
-                  '& textarea': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', fontSize: '0.8125rem' },
-                })}
-              />
-            </SectionCard>
-          </>
-        )}
       </Stack>
     </PageShell>
   );

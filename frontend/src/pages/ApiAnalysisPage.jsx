@@ -237,6 +237,9 @@ export function ApiAnalysisPage() {
 
               {job.status === 'COMPLETED' && (
                 <>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                    Summary
+                  </Typography>
                   <Box
                     sx={{
                       p: 2,
@@ -251,6 +254,9 @@ export function ApiAnalysisPage() {
                     </Typography>
                     <Typography variant="h5" sx={{ fontWeight: 700, mt: 0.5 }}>
                       {job.data?.riskLevel ?? '—'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      {job.data?.summary ?? '—'}
                     </Typography>
                   </Box>
 
@@ -272,7 +278,7 @@ export function ApiAnalysisPage() {
                       }}
                     >
                       <Typography variant="caption" color="primary.light" sx={{ fontWeight: 600 }}>
-                        [{issue?.severity ?? '—'}] {issue?.field ?? '—'}
+                        [{issue?.severity.toUpperCase() ?? '—'}] {issue?.field.toUpperCase() ?? '—'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         {issue?.type ?? '—'}
