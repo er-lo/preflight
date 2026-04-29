@@ -15,31 +15,7 @@ export function PageShell({ title, subtitle, eyebrow = 'Tool', children, maxCont
         mx: 'auto',
       }}
     >
-      <Box
-        sx={{
-          position: 'absolute',
-          top: { xs: -24, sm: -40 },
-          right: { xs: '-8%', sm: '5%' },
-          width: { xs: 200, sm: 320 },
-          height: { xs: 200, sm: 280 },
-          borderRadius: '50%',
-          filter: 'blur(2px)',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
       <Box sx={{ position: 'relative', zIndex: 1, mb: { xs: 3, sm: 4 } }}>
-        <Typography
-          variant="overline"
-          sx={{
-            color: 'primary.light',
-            letterSpacing: '0.18em',
-            fontWeight: 700,
-            fontSize: '0.7rem',
-          }}
-        >
-          {eyebrow}
-        </Typography>
         <Typography
           variant="h3"
           component="h1"
@@ -49,8 +25,6 @@ export function PageShell({ title, subtitle, eyebrow = 'Tool', children, maxCont
             color: 'text.primary',
             pl: 2,
             ml: -2,
-            borderLeft: '3px solid',
-            borderColor: 'primary.main',
           }}
         >
           {title}

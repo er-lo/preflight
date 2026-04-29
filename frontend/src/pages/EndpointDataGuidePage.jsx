@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { TextField, Button, Stack, Alert, Divider, List, ListItem, ListItemText, CircularProgress, Box, Typography, Chip } from '@mui/material';
+import { useState, useEffect, useCallback } from 'react';
+import { TextField, Button, Stack, Alert, Divider, CircularProgress, Box, Typography, Chip } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
 import { apiRequest } from '../lib/api';
 import { PageShell } from '../components/PageShell';
@@ -7,33 +7,43 @@ import { SectionCard } from '../components/SectionCard';
 import { formFieldSx } from '../styles/formFieldSx';
 
 const POLL_MS = 3000;
-const POLL_MAX = 100;
+const POLL_MAX = 5;
 
 function parseOpenApi(raw) {
-  const t = raw.trim();
-  if (!t) return { ok: false, error: 'Paste an OpenAPI document (JSON or YAML).' };
-  if (t.startsWith('{')) {
+  const trimmed = raw.trim();
+  if (!trimmed) return { ok: false, error: 'Paste an OpenAPI document (JSON or YAML).' };
+  if (trimmed.startsWith('{')) {
     try {
-      JSON.parse(t);
+      JSON.parse(trimmed);
       return { ok: true, format: 'json' };
     } catch {
-      return { ok: false, error: 'OpenAPI JSON is not valid JSON.' };
+      return { ok: false, error: 'Invalid JSON.' };
     }
   }
-  if (/^\s*openapi:\s/m.test(t)) {
+  if (/^\s*openapi:\s/m.test(trimmed)) {
     return { ok: true, format: 'yaml' };
   }
-  try {
-    JSON.parse(t);
-    return { ok: true, format: 'json' };
-  } catch {
-    /* fall through */
+
+  return { ok: false, error: 'Could not validate as JSON or YAML.' };
+}
+
+function normalizeEndpointGuideResult(result) {
+  if (result == null) return { summary: '', steps: [] };
+
+  let parsedObject = result;
+  if (typeof parsedObject === 'string') {
+    try {
+      const trimmed = parsedObject.trim();
+      parsedObject = JSON.parse(trimmed);
+    } catch {
+      return { summary: '', steps: [] };
+    }
   }
-  return {
-    ok: false,
-    error:
-      'Could not validate as JSON or detect YAML (look for a line starting with openapi:). Fix the document or add a leading { for JSON.',
-  };
+
+  const inner = parsedObject.endpointGuide ?? parsedObject;
+  const summary = typeof inner.summary === 'string' ? inner.summary : '';
+  const steps = Array.isArray(inner.steps) ? inner.steps.filter(Boolean) : [];
+  return { summary, steps };
 }
 
 export function EndpointDataGuidePage() {
@@ -46,7 +56,6 @@ export function EndpointDataGuidePage() {
 
   const [error, setError] = useState(null);
   const [info, setInfo] = useState(null);
-  const [lastPayload, setLastPayload] = useState(null);
 
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
@@ -58,19 +67,9 @@ export function EndpointDataGuidePage() {
   const [pollLoading, setPollLoading] = useState(false);
   const [pollError, setPollError] = useState(null);
 
-  const previewJson = useMemo(() => {
-    if (!lastPayload) return '';
-    const maxSpecChars = 4000;
-    const spec = lastPayload.openApiSpec;
-    const truncated =
-      spec.length > maxSpecChars ? `${spec.slice(0, maxSpecChars)}\n… [truncated for preview; full spec sent to API]` : spec;
-    return JSON.stringify({ ...lastPayload, openApiSpec: truncated }, null, 2);
-  }, [lastPayload]);
-
   const buildPayload = () => {
     setError(null);
     setInfo(null);
-    setLastPayload(null);
 
     const spec = parseOpenApi(openApiSpec);
     if (!spec.ok) {
@@ -83,13 +82,11 @@ export function EndpointDataGuidePage() {
     }
 
     const payload = {
-      openApiFormat: spec.format,
-      openApiSpec: openApiSpec.trim(),
+      apiDoc: openApiSpec.trim(),
       dataGoal: dataGoal.trim(),
       extraContext: extraContext.trim() || null,
     };
 
-    setLastPayload(payload);
     return payload;
   };
 
@@ -180,7 +177,7 @@ export function EndpointDataGuidePage() {
   return (
     <PageShell
       title="Endpoint data guide"
-      subtitle="Given a full OpenAPI description and a plain-language goal, this tool will suggest an ordered call plan: which operations to invoke, what each response contributes, and common pitfalls (pagination, auth, dependent IDs)."
+      subtitle="Given a full OpenAPI description and a plain-language goal, this tool will suggest an ordered call plan: which operations to invoke and what each response contributes."
     >
       <Stack spacing={3}>
         {error && <Alert severity="error">{error}</Alert>}
@@ -305,87 +302,93 @@ export function EndpointDataGuidePage() {
                     bgcolor: alpha(theme.palette.common.white, 0.02),
                   }}
                 >
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
-                    Guide (JSON)
-                  </Typography>
-                  <TextField
-                    value={job.data?.guide ? JSON.stringify(job.data.guide, null, 2) : ''}
-                    multiline
-                    minRows={10}
-                    fullWidth
-                    InputProps={{ readOnly: true }}
-                    sx={fieldSx({
-                      '& textarea': {
-                        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-                        fontSize: '0.8125rem',
-                      },
-                    })}
-                  />
+                  {(() => {
+                    const { summary, steps } = normalizeEndpointGuideResult(job.data?.result);
+                    return (
+                      <Stack spacing={2}>
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                            Summary
+                          </Typography>
+                          <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }} color="text.secondary">
+                            {summary?.trim() ? summary : '—'}
+                          </Typography>
+                        </Box>
+
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                            Steps
+                          </Typography>
+                          {steps.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              —
+                            </Typography>
+                          ) : (
+                            <Stack spacing={1}>
+                              {steps.map((s, idx) => {
+                                const order = s?.order ?? idx + 1;
+                                const title = typeof s?.title === 'string' ? s.title : '';
+                                const description = typeof s?.description === 'string' ? s.description : '';
+                                const purpose = typeof s?.purpose === 'string' ? s.purpose : '';
+                                const exampleRequest = typeof s?.exampleRequest === 'string' ? s.exampleRequest : '';
+                                return (
+                                  <Box key={idx} sx={{ pl: 1 }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                                      {order}. {title}
+                                    </Typography>
+                                    {description?.trim() ? (
+                                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                                        {description}
+                                      </Typography>
+                                    ) : null}
+                                    {purpose?.trim() ? (
+                                      <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                                        {purpose}
+                                      </Typography>
+                                    ) : null}
+                                    {exampleRequest?.trim() ? (
+                                      <>
+                                      <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'pre-wrap' }}>
+                                      EXAMPLE REQUEST:
+                                      </Typography>
+                                      <Box
+                                        component="pre"
+                                        sx={{
+                                          m: 0,
+                                          mt: 0.5,
+                                          borderRadius: 1,
+                                          border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+                                          bgcolor: alpha(theme.palette.common.white, 0.08),
+                                          p: 1,
+                                          fontFamily:
+                                            'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                                          fontSize: 14,
+                                          lineHeight: 1.45,
+                                          color: 'text.secondary',
+                                          whiteSpace: 'pre-wrap',
+                                          wordBreak: 'break-word',
+                                          maxHeight: 360,
+                                          overflow: 'auto',
+                                        }}
+                                      >
+                                        {exampleRequest}
+                                      </Box>
+                                      </>
+                                    ) : null}
+                                  </Box>
+                                );
+                              })}
+                            </Stack>
+                          )}
+                        </Box>
+                      </Stack>
+                    );
+                  })()}
                 </Box>
               )}
             </Box>
           )}
         </SectionCard>
-
-        {lastPayload && (
-          <>
-            <SectionCard
-              title="Example of planned output"
-              description="After you connect a worker that performs inference, this section can show a concrete call sequence. For now, here is the shape of guidance you can expect."
-            >
-              <List
-                dense
-                sx={{
-                  borderRadius: 2,
-                  py: 0,
-                  bgcolor: alpha(theme.palette.common.white, 0.03),
-                  border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
-                }}
-              >
-                <ListItem sx={{ alignItems: 'flex-start' }}>
-                  <ListItemText
-                    primaryTypographyProps={{ variant: 'subtitle2', fontWeight: 600 }}
-                    secondaryTypographyProps={{ variant: 'body2', sx: { mt: 0.5, lineHeight: 1.65 } }}
-                    primary="1. Entry operations"
-                    secondary="Identify list or search endpoints that can narrow the problem domain."
-                  />
-                </ListItem>
-                <ListItem sx={{ alignItems: 'flex-start' }}>
-                  <ListItemText
-                    primaryTypographyProps={{ variant: 'subtitle2', fontWeight: 600 }}
-                    secondaryTypographyProps={{ variant: 'body2', sx: { mt: 0.5, lineHeight: 1.65 } }}
-                    primary="2. Dependency chain"
-                    secondary="Resolve foreign keys and follow-up calls (e.g. list → detail → sub-resource)."
-                  />
-                </ListItem>
-                <ListItem sx={{ alignItems: 'flex-start' }}>
-                  <ListItemText
-                    primaryTypographyProps={{ variant: 'subtitle2', fontWeight: 600 }}
-                    secondaryTypographyProps={{ variant: 'body2', sx: { mt: 0.5, lineHeight: 1.65 } }}
-                    primary="3. Gotchas"
-                    secondary="Pagination style, required headers, scopes, and idempotent retries called out per step."
-                  />
-                </ListItem>
-              </List>
-            </SectionCard>
-
-            <SectionCard
-              title="Request body preview"
-              description="This is the JSON body sent to POST /tools/openapi-endpoint-guide."
-            >
-              <TextField
-                value={previewJson}
-                multiline
-                rows={12}
-                fullWidth
-                InputProps={{ readOnly: true }}
-                sx={fieldSx({
-                  '& textarea': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', fontSize: '0.8125rem' },
-                })}
-              />
-            </SectionCard>
-          </>
-        )}
       </Stack>
     </PageShell>
   );

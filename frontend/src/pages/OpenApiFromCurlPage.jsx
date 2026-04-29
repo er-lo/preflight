@@ -9,33 +9,33 @@ import { SectionCard } from '../components/SectionCard';
 import { formFieldSx } from '../styles/formFieldSx';
 
 const POLL_MS = 3000;
-const POLL_MAX = 100;
+const POLL_MAX = 5;
 
 function parseJsonField(label, raw, optional) {
-  const t = raw.trim();
-  if (!t) {
+  const trimmed = raw.trim();
+  if (!trimmed) {
     if (optional) return { ok: true, value: null };
     return { ok: false, error: `${label} is required.` };
   }
   try {
-    return { ok: true, value: JSON.parse(t) };
+    return { ok: true, value: JSON.parse(trimmed) };
   } catch {
     return { ok: false, error: `${label} must be valid JSON.` };
   }
 }
 
 function looksLikeCurl(text) {
-  const t = text.trim().toLowerCase();
-  return t.startsWith('curl') || /\bcurl\b/.test(t);
+  const trimmed = text.trim().toLowerCase();
+  return trimmed.startsWith('curl') || /\bcurl\b/.test(trimmed);
 }
 
 function parseJsonResult(value) {
   if (value == null) return null;
   if (typeof value === 'object') return value;
   if (typeof value !== 'string') return null;
-  const t = value.trim();
-  if (!t) return null;
-  return JSON.parse(t);
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return JSON.parse(trimmed);
 }
 
 function JsonResult({ label, value }) {
@@ -48,7 +48,7 @@ function JsonResult({ label, value }) {
       <Box
         sx={{
           borderRadius: 2,
-          border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.9)}`,
+          border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.5)}`,
           bgcolor: (theme) => alpha(theme.palette.common.white, 0.02),
           p: 1.25,
           maxHeight: 520,
@@ -79,12 +79,12 @@ function YamlRawResult({ label, value }) {
         sx={{
           m: 0,
           borderRadius: 2,
-          border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.9)}`,
+          border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.5)}`,
           bgcolor: (theme) => alpha(theme.palette.common.white, 0.02),
           p: 1.5,
           fontFamily:
             'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-          fontSize: 13,
+          fontSize: 14,
           lineHeight: 1.45,
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
@@ -269,7 +269,6 @@ export function OpenApiFromCurlPage() {
               multiline
               rows={6}
               fullWidth
-              helperText="Optional if your cURL already includes -d or --data-raw with JSON."
               sx={fieldSx()}
             />
             <TextField

@@ -10,7 +10,7 @@ export function SectionCard({ title, description, children, sx, ...paperProps })
       sx={[
         (theme) => ({
           p: { xs: 2.25, sm: 3 },
-          borderRadius: 3,
+          borderRadius: 2,
           width: '100%',
           border: `1px solid ${alpha(theme.palette.divider, 0.85)}`,
           bgcolor: alpha(theme.palette.background.paper, 0.65),

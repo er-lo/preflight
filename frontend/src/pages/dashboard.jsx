@@ -56,23 +56,10 @@ export function Dashboard() {
           gap: 0.5,
           position: 'relative',
           overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            left: 0,
-            top: 12,
-            bottom: 12,
-            width: 3,
-            borderRadius: 1,
-            background: `linear-gradient(180deg, ${theme.palette.primary.light}, ${theme.palette.primary.dark})`,
-          },
         }}
       >
         <Typography variant="h6" component="div" sx={{ fontWeight: 800, letterSpacing: '-0.03em', pl: 1.25 }}>
           Preflight
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.3, pl: 1.25, fontWeight: 500 }}>
-          Tools
         </Typography>
       </Toolbar>
       <Divider sx={{ borderColor: alpha(theme.palette.common.white, 0.08) }} />
@@ -116,22 +103,12 @@ export function Dashboard() {
                 </ListItemIcon>
                 <ListItemText
                   primary={route.label}
-                  primaryTypographyProps={{
-                    variant: 'body2',
-                    fontWeight: selected ? 600 : 500,
-                    color: 'text.primary',
-                  }}
                 />
               </ListItemButton>
             </ListItem>
           );
         })}
       </List>
-      <Box sx={{ p: 2, mt: 'auto' }}>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1.5 }}>
-          Pick a tool to open it in this panel.
-        </Typography>
-      </Box>
     </Box>
   );
 

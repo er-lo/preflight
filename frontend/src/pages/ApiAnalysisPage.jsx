@@ -19,6 +19,13 @@ import { formFieldSx } from '../styles/formFieldSx';
 const POLL_MS = 3000;
 const POLL_MAX = 100;
 
+function getRiskColorKey(riskLevel) {
+  const normalized = String(riskLevel ?? '').trim().toUpperCase();
+  if (normalized === 'HIGH') return 'error';
+  if (normalized === 'MEDIUM') return 'warning';
+  return 'success';
+}
+
 export function ApiAnalysisPage() {
   const theme = useTheme();
   const fieldSx = (extra = {}) => ({ ...formFieldSx(theme), ...extra });
@@ -121,6 +128,7 @@ export function ApiAnalysisPage() {
   const completedRecommendations = Array.isArray(job?.data?.recommendations)
     ? job.data.recommendations.filter(Boolean)
     : [];
+  const riskColorKey = getRiskColorKey(job?.data?.riskLevel);
 
   return (
     <PageShell
@@ -242,20 +250,20 @@ export function ApiAnalysisPage() {
                   </Typography>
                   <Box
                     sx={{
-                      p: 2,
+                      p: 1.25,
                       mb: 2,
-                      borderRadius: 2,
-                      bgcolor: alpha(theme.palette.success.main, 0.08),
-                      border: `1px solid ${alpha(theme.palette.success.main, 0.25)}`,
+                      borderRadius: 1,
+                      bgcolor: alpha(theme.palette[riskColorKey].main, 0.08),
+                      border: `1px solid ${alpha(theme.palette[riskColorKey].main, 0.25)}`,
                     }}
                   >
-                    <Typography variant="overline" color="success.light" sx={{ fontWeight: 700 }}>
-                      Risk level
+                    <Typography variant="overline" color={`${riskColorKey}.light`} sx={{ fontWeight: 700 }}>
+                      RISK LEVEL
                     </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700, mt: 0.5 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
                       {job.data?.riskLevel ?? '—'}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
                       {job.data?.summary ?? '—'}
                     </Typography>
                   </Box>
@@ -266,27 +274,15 @@ export function ApiAnalysisPage() {
                   {completedIssues.length === 0 && (
                     <Typography color="text.secondary">No issues found.</Typography>
                   )}
-                  {completedIssues.map((issue, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        p: 2,
-                        mb: 1.5,
-                        borderRadius: 2,
-                        border: `1px solid ${alpha(theme.palette.divider, 0.9)}`,
-                        bgcolor: alpha(theme.palette.common.white, 0.02),
-                      }}
-                    >
+                  {completedIssues.map((issue) => (
+                    <>
                       <Typography variant="caption" color="primary.light" sx={{ fontWeight: 600 }}>
-                        [{issue?.severity.toUpperCase() ?? '—'}] {issue?.field.toUpperCase() ?? '—'}
+                        SEVERITY: {issue?.severity.toUpperCase() ?? '—'} | FIELD: {issue?.field.toUpperCase() ?? '—'} | TYPE: {issue?.type.toUpperCase() ?? '—'}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                        {issue?.type ?? '—'}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mt: 1, lineHeight: 1.65 }}>
+                      <Typography variant="body2" sx={{ mt: 0.5, mb: 2, lineHeight: 1.65 }}>
                         {issue?.message ?? '—'}
                       </Typography>
-                    </Box>
+                      </>
                   ))}
 
                   <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 3, mb: 1 }}>
