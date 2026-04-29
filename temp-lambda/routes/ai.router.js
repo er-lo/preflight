@@ -6,6 +6,6 @@ const aiController = require('../controllers/ai.controller');
 
 const jsonParser = bodyParser.json();
 
-router.post('/', jsonParser, aiController.startAnalysis);
+router.post('/', jsonParser, aiController.startJob);
 
 module.exports = router;

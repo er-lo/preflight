@@ -4,6 +4,20 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_UPDATE } = LOG_PREFIXES;
 
+function toJsonDbValue(value, fallback) {
+  if (value === undefined || value === null) return JSON.stringify(fallback);
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return JSON.stringify(fallback);
+    try {
+      return JSON.stringify(JSON.parse(trimmed));
+    } catch {
+      return JSON.stringify(value);
+    }
+  }
+  return JSON.stringify(value);
+}
+
 async function createResultRecord(jobId) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
@@ -131,13 +145,17 @@ async function updateResultRecord(resultId, jobId, riskLevel, summary, issuesJso
   const client = await pool.connect();
 
   try {
+    const safeIssuesJson = toJsonDbValue(issuesJson, []);
+    const safeRecommendationsJson = toJsonDbValue(recommendationsJson, []);
+
     const query = `
       UPDATE analysis_results
-      SET risk_level = $1, summary = $2, issues_json = $3, recommendations_json = $4
+      SET risk_level = $1, summary = $2, issues_json = $3::jsonb, recommendations_json = $4::jsonb
       WHERE result_id = $5 AND job_id = $6
+      RETURNING *
     `;
 
-    const values = [riskLevel, summary, issuesJson, recommendationsJson, resultId, jobId];
+    const values = [riskLevel, summary, safeIssuesJson, safeRecommendationsJson, resultId, jobId];
 
     const result = await client.query(query, values);
 

@@ -4,15 +4,12 @@ const { log } = require('../utils/log');
 
 const { START_ANALYSIS } = LOG_PREFIXES;
 
-async function startAnalysis(req, res) {
+async function startJob(req, res) {
   try {
     log(START_ANALYSIS, `Incoming Request Body: ${JSON.stringify(req.body)}`)
-    log(START_ANALYSIS, `Starting AI Analysis`)
+    log(START_ANALYSIS, `Starting AI job`)
 
-
-    const result = await aiService.processDatabaseFunctions(req.body);
-
-    aiService.processAIAnalysis(req.body);
+    const result = await aiService.processJob(req.body);
 
     if (!result.success) {
       const results = {
@@ -48,4 +45,4 @@ async function startAnalysis(req, res) {
   }
 };
 
-exports.startAnalysis = startAnalysis;
+exports.startJob = startJob;
