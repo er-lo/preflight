@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS analysis_jobs (
 CREATE TABLE IF NOT EXISTS analysis_results (
     result_id SERIAL PRIMARY KEY,
     job_id INTEGER NOT NULL REFERENCES analysis_jobs(job_id),
-    risk_level VARCHAR(10) NOT NULL,
-    summary TEXT NOT NULL,
-    issues_json JSONB NOT NULL,
+    risk_level VARCHAR(10),
+    summary TEXT,
+    issues_json JSONB,
     recommendations_json JSONB,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

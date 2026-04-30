@@ -21,6 +21,10 @@ async function getPostgresPool() {
       host,
       port,
       database,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     });
   }
 
