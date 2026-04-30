@@ -1,5 +1,8 @@
 const { getPostgresPool } = require('./dbClient');
-const { JOB_STATUS } = require('../constants/constants');
+const { JOB_STATUS, LOG_PREFIXES } = require('../constants/constants');
+const { log } = require('../utils/log');
+
+const { DB_CREATE, DB_UPDATE } = LOG_PREFIXES;
 
 async function createEndpointGuideJobRecord(jobId) {
   const pool = await getPostgresPool();
@@ -8,10 +11,12 @@ async function createEndpointGuideJobRecord(jobId) {
     const query = `
       INSERT INTO endpoint_guide_jobs (job_id) VALUES ($1) RETURNING *
     `;
+
     const result = await client.query(query, [jobId]);
     if (result.rows.length) {
       log(DB_CREATE, `Endpoint-guide job record was created with id: ${result.rows[0].job_id}.`);
     }
+
     return result.rows[0] ?? null;
   } catch (error) {
     log(DB_CREATE, `Error: ${error.message}`);
@@ -37,7 +42,9 @@ async function updateEndpointGuideJobStatus(jobId, status) {
           completed_at = CASE WHEN $3::timestamp IS NULL THEN completed_at ELSE $3 END
       WHERE job_id = $4
     `;
+
     await client.query(query, [status, startedAt, completedAt, jobId]);
+
     return true;
   } catch (error) {
     log(DB_UPDATE, `Error: ${error.message}`);
@@ -56,6 +63,7 @@ async function updateEndpointGuideResult(jobId, guide) {
       SET guide = $1
       WHERE job_id = $2
     `;
+
     await client.query(query, [guide, jobId]);
     if (result.rows.length) {
       log(DB_UPDATE, `Endpoint-guide result record was updated for job: ${jobId}.`);

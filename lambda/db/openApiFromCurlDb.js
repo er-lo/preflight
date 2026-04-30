@@ -1,5 +1,8 @@
 const { getPostgresPool } = require('./dbClient');
-const { JOB_STATUS } = require('../constants/constants');
+const { JOB_STATUS, LOG_PREFIXES } = require('../constants/constants');
+const { log } = require('../utils/log');
+
+const { DB_CREATE, DB_UPDATE } = LOG_PREFIXES;
 
 async function createOpenApiFromCurlJobRecord(jobId) {
   const pool = await getPostgresPool();
@@ -40,6 +43,7 @@ async function updateOpenApiFromCurlJobStatus(jobId, status) {
           completed_at = CASE WHEN $3::timestamp IS NULL THEN completed_at ELSE $3 END
       WHERE job_id = $4
     `;
+
     await client.query(query, [status, startedAt, completedAt, jobId]);
 
     return true;
@@ -61,12 +65,16 @@ async function updateOpenApiFromCurlResult(jobId, resultJson, resultYaml) {
       SET result_json = $1, result_yaml = $2
       WHERE job_id = $4
     `;
+
     const result = await client.query(query, [resultJson ?? null, resultYaml ?? null, jobId]);
     if (result.rows.length) {
       log(DB_UPDATE, `OpenAPI-from-cURL result record was updated for job: ${jobId}.`);
     }
+
+    return true;
   } catch (error) {
     log(DB_UPDATE, `Error: ${error.message}`);
+    return false;
   } finally {
     await client.release();
   }

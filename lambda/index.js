@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const { processAnalysisJob, processOpenApiFromCurlJob, processEndpointGuideJob } = require('./src/jobs');
+
 function safeJsonParse(value) {
   if (typeof value !== 'string') return { ok: false, value: null };
   try {
@@ -9,11 +11,37 @@ function safeJsonParse(value) {
   }
 }
 
-function normalizeLambdaEvent(event) {
-  if (event && typeof event === 'object' && !Buffer.isBuffer(event)) return event;
+function decodeFunctionUrlBody(event) {
+  if (!event || typeof event.body !== 'string') return null;
 
-  const parsed = safeJsonParse(event);
-  if (parsed.ok && parsed.value && typeof parsed.value === 'object') return parsed.value;
+  let raw = event.body;
+  if (event.isBase64Encoded) {
+    raw = Buffer.from(raw, 'base64').toString('utf8');
+  }
+
+  const parsed = safeJsonParse(raw);
+  return parsed.ok && parsed.value && typeof parsed.value === 'object' ? parsed.value : null;
+}
+
+function normalizeLambdaEvent(event) {
+  if (Buffer.isBuffer(event)) {
+    const parsed = safeJsonParse(event.toString('utf8'));
+    return parsed.ok && parsed.value && typeof parsed.value === 'object' ? parsed.value : {};
+  }
+
+  if (event && typeof event === 'object') {
+    const fromBody = decodeFunctionUrlBody(event);
+    if (fromBody) return fromBody;
+
+    if (typeof event.jobType === 'string' || typeof event.jobId !== 'undefined') {
+      return event;
+    }
+  }
+
+  if (typeof event === 'string') {
+    const parsed = safeJsonParse(event);
+    if (parsed.ok && parsed.value && typeof parsed.value === 'object') return parsed.value;
+  }
 
   return {};
 }
@@ -60,7 +88,6 @@ async function handler(event, context) {
       }
     }
 
-    // Backend uses InvocationType: 'Event' (async), so it's fine to return after completion here.
     return response(202, { success: true, message: 'Job processed.' });
   } catch (error) {
     console.error('Lambda error:', error);

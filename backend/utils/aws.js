@@ -1,3 +1,4 @@
+const axios = require('axios');
 const { URL } = require('url');
 const { SignatureV4 } = require('@aws-sdk/signature-v4');
 const { HttpRequest } = require('@aws-sdk/protocol-http');
@@ -10,7 +11,7 @@ const { sendAnalysisRequest } = require('./axios');
 const { LAMBDA_INVOKE } = LOG_PREFIXES;
 
 async function lambdaInvoker(jobId, jobType, body) {
-  if (process.env.NODE_ENVIRONMENT.includes('dev')) {
+  if ((process.env.NODE_ENVIRONMENT || '').includes('dev')) {
     // keeping this to show how I was testing locally
     // this will be making an axios request to a second server that will act as my lambda during testing
     const unencodedPayload = { jobId, jobType, ...body };
@@ -55,7 +56,6 @@ async function lambdaInvoker(jobId, jobType, body) {
       headers: {
         host: url.hostname,
         'content-type': 'application/json',
-        'content-length': Buffer.byteLength(bodyJson).toString(),
       },
       body: bodyJson,
     });
@@ -77,9 +77,14 @@ async function lambdaInvoker(jobId, jobType, body) {
       timeout: 1500,
       maxRedirects: 0,
       validateStatus: () => true,
+      responseType: 'text',
     })
     .then((res) => {
       log(LAMBDA_INVOKE, `Function URL responded with status ${res.status}`);
+      if (res.status >= 400) {
+        const errType = res.headers?.['x-amzn-errortype'];
+        log(LAMBDA_INVOKE, `Error details: x-amzn-errortype=${errType || 'n/a'} body=${res.data}`);
+      }
     })
     .catch((err) => {
       log(LAMBDA_INVOKE, `Function URL request error: ${err.message}`);
