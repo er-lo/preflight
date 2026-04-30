@@ -10,7 +10,7 @@ async function createOpenApiFromCurlJobRecord(jobId) {
 
   try {
     const query = `
-      INSERT INTO openapi_from_curl_jobs (job_id) VALUES ($1) RETURNING *
+      INSERT INTO openapi_from_curl_results (job_id) VALUES ($1) RETURNING *
     `;
 
     const result = await client.query(query, [jobId]);

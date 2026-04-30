@@ -9,7 +9,7 @@ async function createEndpointGuideJobRecord(jobId) {
   const client = await pool.connect();
   try {
     const query = `
-      INSERT INTO endpoint_guide_jobs (job_id) VALUES ($1) RETURNING *
+      INSERT INTO endpoint_guide_results (job_id) VALUES ($1) RETURNING *
     `;
 
     const result = await client.query(query, [jobId]);
@@ -60,7 +60,7 @@ async function updateEndpointGuideResult(jobId, guide) {
   try {
     const query = `
       UPDATE endpoint_guide_results
-      SET guide = $1
+      SET result = $1
       WHERE job_id = $2
     `;
 
