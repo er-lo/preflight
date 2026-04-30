@@ -9,15 +9,14 @@ async function callOpenAi(prompt) {
     throw err;
   }
 
-  const client = new OpenAI({ 
-    apiKey,
-    timeout: 300000,
-   });
+  const client = new OpenAI({
+    apiKey
+  });
 
   const response = await client.responses.create({
     model: process.env.OPENAI_MODEL ?? 'gpt-5.4',
     input: prompt,
-  }, { timeout: 300000 });
+  });
 
   return response;
 }
