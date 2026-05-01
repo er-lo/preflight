@@ -30,10 +30,15 @@ app.use('/health', (req, res) => {
 app.use('/ai/', aiRouter);
 
 async function startServer() {
-  // create db tables upon server start
   app.listen(PORT, () => {
     log(SERVER_START, `Server is running on port: ${PORT}`);
   });
 }
+
+// this was a temporary express api that I created to test the AI service locally
+// I created this to avoid running up an aws bill because i don't like spending money
+// this should be up to date ish for the requests
+// i don't feel like commenting everything here just know that a request is made here and it processes
+// and calls the openai service to get a result 
 
 startServer();
