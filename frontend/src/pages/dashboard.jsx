@@ -19,7 +19,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AnalyticsOutlinedIcon from '@mui/icons-material/AnalyticsOutlined';
 import TerminalOutlinedIcon from '@mui/icons-material/TerminalOutlined';
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
-import { useNavigate, useLocation, Outlet } from 'react-router';
+import { useNavigate, useLocation, Outlet, Link as RouterLink } from 'react-router';
 
 const DRAWER_WIDTH = 268;
 
@@ -58,7 +58,19 @@ export function Dashboard() {
           overflow: 'hidden',
         }}
       >
-        <Typography variant="h6" component="div" sx={{ fontWeight: 800, letterSpacing: '-0.03em', pl: 1.25 }}>
+        <Typography
+          variant="h6"
+          component={RouterLink}
+          to="/"
+          sx={{
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+            pl: 1.25,
+            color: 'text.primary',
+            textDecoration: 'none',
+            '&:hover': { color: 'primary.light' },
+          }}
+        >
           Preflight
         </Typography>
       </Toolbar>

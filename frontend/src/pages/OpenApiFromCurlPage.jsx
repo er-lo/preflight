@@ -239,7 +239,7 @@ export function OpenApiFromCurlPage() {
   return (
     <PageShell
       title="OpenAPI from cURL"
-      subtitle="Turn something you already run from the terminal into structured API documentation. Provide the cURL command, then optionally paste representative request and response JSON so the generator can infer paths, methods, and schemas."
+      subtitle="Turn your curl request, request body, and response body into structured API documentation."
     >
       <Stack spacing={3}>
         {error && <Alert severity="error">{error}</Alert>}
