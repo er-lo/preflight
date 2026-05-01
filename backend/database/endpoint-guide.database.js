@@ -4,6 +4,7 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_RETRIEVE } = LOG_PREFIXES;
 
+// function to create a new endpoint guide job record
 async function createEndpointGuideJob(body) {
   const { apiDoc, dataGoal, extraContext } = body;
   const pool = await dbClient.getPostgresPool();
@@ -41,6 +42,7 @@ async function createEndpointGuideJob(body) {
   }
 }
 
+// function to retrieve a endpoint guide job record
 async function retrieveEndpointGuideJob(jobId) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
@@ -64,6 +66,7 @@ async function retrieveEndpointGuideJob(jobId) {
   }
 }
 
+// function to retrieve a endpoint guide result record
 async function retrieveEndpointGuideResult(jobId) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();

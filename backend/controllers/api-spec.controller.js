@@ -4,6 +4,7 @@ const { LOG_PREFIXES } = require('../constants/constants');
 
 const { GET_SPEC_CREATION, POST_SPEC_CREATION } = LOG_PREFIXES;
 
+// controller for the OpenAPI-from-cURL tool get route
 async function getOpenApiFromCurl(req, res) {
   try {
     log(GET_SPEC_CREATION, `Starting OpenAPI-from-cURL Retrieval Process for record: ${req.query.jobId}`);
@@ -25,6 +26,7 @@ async function getOpenApiFromCurl(req, res) {
   }
 }
 
+// controller for the OpenAPI-from-cURL tool post route
 async function postOpenApiFromCurl(req, res) {
   try {
     log(POST_SPEC_CREATION, `Incoming Request Body: ${JSON.stringify(req.body)}`);

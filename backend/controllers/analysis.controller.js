@@ -4,10 +4,12 @@ const { log } = require('../utils/log');
 
 const { GET_ANALYSIS, POST_ANALYSIS } = LOG_PREFIXES;
 
+// controller for the analysis tool get route
 async function getAnalysis(req, res) {
   try {
     log(GET_ANALYSIS, `Starting Analysis Retrieval Process for record: ${req.query.id}`)
 
+    // process the request and return the result
     const result = await analysisService.processAnalysisRetrieval(req.query);
     if (!result.success) {
       const results = {
@@ -46,11 +48,13 @@ async function getAnalysis(req, res) {
   }
 };
 
+// controller for the analysis tool post route
 async function createAnalysis(req, res) {
   try {
     log(POST_ANALYSIS, `Incoming Request Body: ${JSON.stringify(req.body)}`)
     log(POST_ANALYSIS, `Starting Analysis Creation Process`)
 
+    // process the request and return the result
     const result = await analysisService.processAnalysisCreation(req.body);
     if (!result.success) {
       const results = {

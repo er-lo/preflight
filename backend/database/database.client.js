@@ -7,6 +7,7 @@ const { DB_POOL } = LOG_PREFIXES;
 
 let pool;
 
+// function to get the postgres pool and work with the database
 async function getPostgresPool() {
   const user = process.env.PG_USER;
   const password = process.env.PG_PASS;
@@ -31,6 +32,7 @@ async function getPostgresPool() {
   return pool;
 }
 
+// function to close the postgres pool
 async function closePool() {
   if (pool) {
     try {

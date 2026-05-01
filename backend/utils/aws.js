@@ -10,6 +10,7 @@ const { sendAnalysisRequest } = require('./axios');
 
 const { LAMBDA_INVOKE } = LOG_PREFIXES;
 
+// function to invoke the lambda function however this was changed due to lambda api gateway timeout being too short
 async function lambdaInvoker(jobId, jobType, body) {
   if ((process.env.NODE_ENVIRONMENT || '').includes('dev')) {
     // keeping this to show how I was testing locally
@@ -32,6 +33,8 @@ async function lambdaInvoker(jobId, jobType, body) {
     // this was causing issues with the lambda function not being able to call openai.
     // this was due to the api gateway timeout being too short.
     // the new code is using axios to make a request to the lambda function.
+    // only special thing for these requests is that we have to sign the request with the aws sdk.
+    // luckily this is pretty easy to do with the aws sdk and since this is hosted on ec2
 
     const functionUrl = process.env.LAMBDA_FUNCTION_URL;
     if (!functionUrl) {

@@ -4,6 +4,7 @@ const { LOG_PREFIXES } = require('../constants/constants');
 
 const { GET_ENDPOINT_GUIDE, POST_ENDPOINT_GUIDE } = LOG_PREFIXES;
 
+// controller for the endpoint guide tool get route
 async function getEndpointDataGuide(req, res) {
   try {
     log(GET_ENDPOINT_GUIDE, `Starting Endpoint Guide Retrieval Process for record: ${req.query.jobId}`);
@@ -25,6 +26,7 @@ async function getEndpointDataGuide(req, res) {
   }
 }
 
+// controller for the endpoint guide tool post route
 async function postEndpointDataGuide(req, res) {
   try {
     log(POST_ENDPOINT_GUIDE, `Incoming Request Body: ${JSON.stringify(req.body)}`);

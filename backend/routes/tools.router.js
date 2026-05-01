@@ -8,6 +8,7 @@ const endpointGuideController = require('../controllers/endpoint-guide.controlle
 
 const jsonParser = bodyParser.json();
 
+// routes for the tools all endpoints have a get and post route.
 router.get('/api-analysis', analysisController.getAnalysis);
 router.post('/api-analysis', jsonParser, analysisController.createAnalysis);
 router.get('/openapi-from-curl', apiSpecController.getOpenApiFromCurl);

@@ -4,6 +4,7 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_RETRIEVE } = LOG_PREFIXES;
 
+// function to create a new OpenAPI-from-cURL job record
 async function createOpenApiFromCurlJob(body) {
   const { curl, expectedRequestBody, expectedResponseBody } = body;
   const pool = await dbClient.getPostgresPool();
@@ -41,6 +42,7 @@ async function createOpenApiFromCurlJob(body) {
   }
 }
 
+// function to retrieve a OpenAPI-from-cURL job record
 async function retrieveOpenApiFromCurlJob(jobId) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
@@ -64,6 +66,7 @@ async function retrieveOpenApiFromCurlJob(jobId) {
   }
 }
 
+// function to retrieve a OpenAPI-from-cURL result record
 async function retrieveOpenApiFromCurlResult(jobId) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();

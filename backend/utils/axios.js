@@ -1,5 +1,6 @@
 const axios = require('axios');
 
+// function to send the analysis request to the AI service
 async function sendAnalysisRequest(data) {
   try {
     const aiClient = axios.create({

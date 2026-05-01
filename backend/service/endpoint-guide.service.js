@@ -9,6 +9,7 @@ const { GET_ENDPOINT_GUIDE, POST_ENDPOINT_GUIDE } = LOG_PREFIXES;
 async function processEndpointGuideRetrieval(query) {
   const { jobId } = query;
 
+  // validate the request
   log(GET_ENDPOINT_GUIDE, 'Performing request validation..');
   if (!jobId) {
     return {
@@ -18,6 +19,7 @@ async function processEndpointGuideRetrieval(query) {
     };
   }
 
+  // retrieve the job status. This will determine if we will pull the result.
   log(GET_ENDPOINT_GUIDE, `Attempting to retrieve job status for Job ID: ${jobId}..`);
   const job = await endpointGuideDB.retrieveEndpointGuideJob(jobId);
   if (!job) {
@@ -28,6 +30,7 @@ async function processEndpointGuideRetrieval(query) {
     };
   }
 
+  // return based on the status of the job
   switch (job.status) {
     case JOB_STATUS.PENDING:
       return { success: true, status: JOB_STATUS.PENDING, message: 'Endpoint guide has not been started yet.' };
@@ -39,6 +42,7 @@ async function processEndpointGuideRetrieval(query) {
       break;
   }
 
+  // if the job is completed then we grab the result from the DB.
   log(GET_ENDPOINT_GUIDE, 'Job completed. Attempting to retrieve result..');
   const result = await endpointGuideDB.retrieveEndpointGuideResult(jobId);
   if (!result) {
@@ -61,6 +65,7 @@ async function processEndpointGuideRetrieval(query) {
 }
 
 async function processEndpointGuideCreation(body) {
+  // validate the request
   log(POST_ENDPOINT_GUIDE, 'Performing request validation..');
   if (!validation.validateEndpointDataGuideBody(body)) {
     return {
@@ -69,12 +74,15 @@ async function processEndpointGuideCreation(body) {
     };
   }
 
+  // create the job record in the DB
   log(POST_ENDPOINT_GUIDE, 'Creating endpoint-guide record in DB..');
   const job = await endpointGuideDB.createEndpointGuideJob(body);
   if (!job) {
     return { success: false, message: 'There was an issue processing your request. Please try again later.' };
   }
 
+  // invoke the lambda function asynchronously
+  // in development environment this will make a request to the express server to test the AI service
   log(POST_ENDPOINT_GUIDE, 'Kicking off lambda function for endpoint guide..');
   const lambdaResult = await awsUtil.lambdaInvoker(job.job_id, 'endpoint_guide', body);
   if (!lambdaResult) {

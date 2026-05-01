@@ -1,3 +1,4 @@
+// validation functions for each endpoint. verifies that the data for the endpoint is available and in the correct format
 function validateAnalysisCreation(schema, payload, requirements) {
   if (!schema || typeof schema != 'string') return false;
   if (!payload || typeof payload != 'string') return false;

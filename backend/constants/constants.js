@@ -1,3 +1,4 @@
+// constants for the server to make it easier to read the logs and store values
 exports.LOG_PREFIXES = Object.freeze({
   SERVER_START: '[SERVER START]',
   DB_INIT: '[DB INITIALIZATION]',

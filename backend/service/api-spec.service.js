@@ -9,6 +9,7 @@ const { GET_SPEC_CREATION, POST_SPEC_CREATION } = LOG_PREFIXES;
 async function processOpenApiFromCurlRetrieval(query) {
   const { jobId } = query;
 
+  // validate the request
   log(GET_SPEC_CREATION, 'Performing request validation..');
   if (!jobId) {
     return {
@@ -18,6 +19,7 @@ async function processOpenApiFromCurlRetrieval(query) {
     };
   }
 
+  // retrieve the job status. This will determine if we will pull the result.
   log(GET_SPEC_CREATION, `Attempting to retrieve job status for Job ID: ${jobId}..`);
   const job = await apiSpecDB.retrieveOpenApiFromCurlJob(jobId);
   if (!job) {
@@ -28,6 +30,7 @@ async function processOpenApiFromCurlRetrieval(query) {
     };
   }
 
+  // return based on the status of the job
   switch (job.status) {
     case JOB_STATUS.PENDING:
       return { success: true, status: JOB_STATUS.PENDING, message: 'OpenAPI generation has not been started yet.' };
@@ -39,6 +42,7 @@ async function processOpenApiFromCurlRetrieval(query) {
       break;
   }
 
+  // if the job is completed then we grab the result from the DB.
   log(GET_SPEC_CREATION, 'Job completed. Attempting to retrieve result..');
   const result = await apiSpecDB.retrieveOpenApiFromCurlResult(jobId);
   if (!result) {
@@ -63,6 +67,7 @@ async function processOpenApiFromCurlRetrieval(query) {
 }
 
 async function processOpenApiFromCurlCreation(body) {
+  // validate the request
   log(POST_SPEC_CREATION, 'Performing request validation..');
   if (!validation.validateOpenApiFromCurlBody(body)) {
     return {
@@ -72,12 +77,15 @@ async function processOpenApiFromCurlCreation(body) {
     };
   }
 
+  // create the job record in the DB
   log(POST_SPEC_CREATION, 'Creating OpenAPI-from-cURL record in DB..');
   const job = await apiSpecDB.createOpenApiFromCurlJob(body);
   if (!job) {
     return { success: false, message: 'There was an issue processing your request. Please try again later.' };
   }
 
+  // invoke the lambda function asynchronously
+  // in development environment this will make a request to the express server to test the AI service
   log(POST_SPEC_CREATION, 'Kicking off lambda function for OpenAPI-from-cURL..');
   const lambdaResult = await awsUtil.lambdaInvoker(job.job_id, 'openapi_from_curl', body);
   if (!lambdaResult) {

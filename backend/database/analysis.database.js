@@ -4,6 +4,7 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_RETRIEVE } = LOG_PREFIXES;
 
+// function to retrieve the status of an analysis job
 async function retrieveAnalysisStatus(id) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
@@ -33,6 +34,7 @@ async function retrieveAnalysisStatus(id) {
   }
 }
 
+// function to retrieve the result of an analysis job
 async function retrieveAnalysisResult(id) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();
@@ -62,6 +64,7 @@ async function retrieveAnalysisResult(id) {
   }
 }
 
+// function to create a new analysis job record
 async function createAnalysisRecord(schema, payload, requirements) {
   const pool = await dbClient.getPostgresPool();
   const client = await pool.connect();

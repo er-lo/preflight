@@ -18,6 +18,7 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 
+// health check endpoint for testing server is live
 app.use('/health', (req, res) => {
   const data = {
     online: true,
@@ -28,8 +29,10 @@ app.use('/health', (req, res) => {
   res.status(200).send(data);
 });
 
+// router for the tools
 app.use('/tools', toolsRouter);
 
+// start function so that the db gets initialized
 async function startServer() {
   // create db tables upon server start
   const result = await dbInitialization.initializePostgresDatabase();

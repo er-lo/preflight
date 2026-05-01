@@ -9,7 +9,7 @@ const { GET_ANALYSIS, POST_ANALYSIS } = LOG_PREFIXES;
 async function processAnalysisRetrieval(data) {
   const { jobId } = data;
 
-  // since there is only one value no separate validation process is needed
+  // validate the request
   log(GET_ANALYSIS, 'Performing request validation..');
   if (!jobId)
     return {
@@ -28,6 +28,7 @@ async function processAnalysisRetrieval(data) {
       message: 'There was an issue processing your request. Please try again later',
     };
 
+  // return based on the status of the job
   switch (jobStatus.status) {
     case (JOB_STATUS.PENDING):
       return {
@@ -98,7 +99,7 @@ async function processAnalysisCreation(data) {
     };
 
   // invokes the lambda function asynchronously
-  // in development environment this will do nothing as I don't want to kick off a lambda everytime i'm testing locally
+  // in development environment this will make a request to the express server to test the AI service
   log(POST_ANALYSIS, 'Kicking off lambda function for AI analysis..');
   const lambdaResult = await awsUtil.lambdaInvoker(jobId.job_id, 'analysis', {
     schema,

@@ -5,6 +5,9 @@ const { log } = require('../../utils/log');
 
 const { DB_INIT } = LOG_PREFIXES;
 
+// this function creates the tables in the database on the first server start
+// ensures that wherever the server is hosted it has the correct tables.
+// db-creation.sql is the file that contains the SQL commands to create the tables.
 async function initializePostgresDatabase() {
   const pool = await dbHelper.getPostgresPool();
   const client = await pool.connect();
