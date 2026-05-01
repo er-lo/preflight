@@ -16,9 +16,11 @@ import { PageShell } from '../components/PageShell';
 import { SectionCard } from '../components/SectionCard';
 import { formFieldSx } from '../styles/formFieldSx';
 
+// poll every 3 seconds for up to 20 times
 const POLL_MS = 3000;
-const POLL_MAX = 100;
+const POLL_MAX = 20;
 
+// return the color key for the risk level
 function getRiskColorKey(riskLevel) {
   const normalized = String(riskLevel ?? '').trim().toUpperCase();
   if (normalized === 'HIGH') return 'error';
@@ -43,6 +45,7 @@ export function ApiAnalysisPage() {
   const [pollLoading, setPollLoading] = useState(false);
   const [pollError, setPollError] = useState(null);
 
+  // fetch the job from the API
   const fetchJob = useCallback(async () => {
     const data = await apiRequest(`/tools/api-analysis?jobId=${encodeURIComponent(activeJobId)}`);
     return data;
@@ -88,6 +91,7 @@ export function ApiAnalysisPage() {
     };
   }, [activeJobId, fetchJob]);
 
+  // submit the analysis to the API and set the job ID
   const submitAnalysis = async () => {
     setSubmitLoading(true);
     setSubmitError(null);
@@ -116,6 +120,7 @@ export function ApiAnalysisPage() {
     }
   };
 
+  // load the job from the API
   const handleLoadJob = (e) => {
     e?.preventDefault?.();
     const trimmed = jobIdInput.trim();
@@ -124,6 +129,7 @@ export function ApiAnalysisPage() {
     setActiveJobId(trimmed);
   };
 
+  // get the completed issues and recommendations
   const completedIssues = Array.isArray(job?.data?.issues) ? job.data.issues.filter(Boolean) : [];
   const completedRecommendations = Array.isArray(job?.data?.recommendations)
     ? job.data.recommendations.filter(Boolean)

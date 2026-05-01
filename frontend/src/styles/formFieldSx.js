@@ -1,6 +1,6 @@
 import { alpha } from '@mui/material/styles';
 
-/** Shared TextField / input outline styling for tool pages */
+// styles for the fields in the tools
 export function formFieldSx(theme) {
   return {
     '& .MuiOutlinedInput-root': {

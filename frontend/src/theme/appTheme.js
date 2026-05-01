@@ -3,6 +3,7 @@ import { alpha } from '@mui/material/styles';
 
 const fontStack = '"Inter", "Segoe UI", system-ui, -apple-system, sans-serif';
 
+// set the theme for the app to make everything consistent
 export const appTheme = createTheme({
   palette: {
     mode: 'dark',

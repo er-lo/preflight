@@ -1,5 +1,6 @@
 const base = () => import.meta.env.VITE_API_BASE_URL ?? '';
 
+// function to make the API request, all tools use this to make requests to the API
 export async function apiRequest(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' };
 

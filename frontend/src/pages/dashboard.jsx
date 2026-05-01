@@ -23,12 +23,14 @@ import { useNavigate, useLocation, Outlet, Link as RouterLink } from 'react-rout
 
 const DRAWER_WIDTH = 268;
 
+// create the routes for the dashboard
 const routes = [
   { path: '/tools/api-analysis', label: 'API analysis', icon: AnalyticsOutlinedIcon },
   { path: '/tools/openapi-from-curl', label: 'OpenAPI from cURL', icon: TerminalOutlinedIcon },
   { path: '/tools/openapi-endpoint-guide', label: 'Endpoint data guide', icon: AccountTreeOutlinedIcon },
 ];
 
+// get the current title for the page
 function currentTitle(pathname) {
   return routes.find((r) => r.path === pathname)?.label ?? 'Preflight';
 }
@@ -39,6 +41,7 @@ export function Dashboard() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // handle the navigation to the path
   const handleNav = (path) => {
     navigate(path);
     setMobileOpen(false);

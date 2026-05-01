@@ -10,8 +10,6 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-
-      {/* Parent path /tools so the layout index does not match "/" and skip the landing page */}
       <Route path="/tools" element={<Dashboard />}>
         <Route index element={<Navigate to="api-analysis" replace />} />
         <Route path="api-analysis" element={<ApiAnalysisPage />} />

@@ -8,7 +8,6 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  Chip,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router';
@@ -17,6 +16,7 @@ import TerminalOutlinedIcon from '@mui/icons-material/TerminalOutlined';
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
+// array for the tools to allow for easy addition if necessary
 const tools = [
   {
     path: '/tools/api-analysis',

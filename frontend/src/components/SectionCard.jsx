@@ -1,6 +1,7 @@
 import { Paper, Typography, Box } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 
+// section card for the tools
 export function SectionCard({ title, description, children, sx, ...paperProps }) {
   return (
     <Paper

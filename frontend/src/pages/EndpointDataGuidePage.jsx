@@ -6,9 +6,11 @@ import { PageShell } from '../components/PageShell';
 import { SectionCard } from '../components/SectionCard';
 import { formFieldSx } from '../styles/formFieldSx';
 
+// poll every 3 seconds for up to 20 times
 const POLL_MS = 3000;
-const POLL_MAX = 5;
+const POLL_MAX = 20;
 
+// parse the OpenAPI document from the response
 function parseOpenApi(raw) {
   const trimmed = raw.trim();
   if (!trimmed) return { ok: false, error: 'Paste an OpenAPI document (JSON or YAML).' };
@@ -27,6 +29,7 @@ function parseOpenApi(raw) {
   return { ok: false, error: 'Could not validate as JSON or YAML.' };
 }
 
+// normalize the endpoint guide result
 function normalizeEndpointGuideResult(result) {
   if (result == null) return { summary: '', steps: [] };
 
@@ -40,6 +43,7 @@ function normalizeEndpointGuideResult(result) {
     }
   }
 
+  // get the summary and steps from the parsed object
   const inner = parsedObject.endpointGuide ?? parsedObject;
   const summary = typeof inner.summary === 'string' ? inner.summary : '';
   const steps = Array.isArray(inner.steps) ? inner.steps.filter(Boolean) : [];
@@ -67,6 +71,7 @@ export function EndpointDataGuidePage() {
   const [pollLoading, setPollLoading] = useState(false);
   const [pollError, setPollError] = useState(null);
 
+  // build the payload for the API request
   const buildPayload = () => {
     setError(null);
     setInfo(null);
@@ -90,6 +95,7 @@ export function EndpointDataGuidePage() {
     return payload;
   };
 
+  // fetch the job from the API
   const fetchJob = useCallback(async () => {
     const data = await apiRequest(`/tools/openapi-endpoint-guide?jobId=${encodeURIComponent(activeJobId)}`);
     return data;
@@ -135,6 +141,7 @@ export function EndpointDataGuidePage() {
     };
   }, [activeJobId, fetchJob]);
 
+  // submit the job to the API and set the job ID
   const submitJob = async () => {
     setSubmitLoading(true);
     setSubmitError(null);
@@ -166,6 +173,7 @@ export function EndpointDataGuidePage() {
     }
   };
 
+  // load the job from the API
   const handleLoadJob = (e) => {
     e?.preventDefault?.();
     const trimmed = jobIdInput.trim();

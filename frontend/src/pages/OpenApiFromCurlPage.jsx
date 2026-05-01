@@ -8,9 +8,11 @@ import { PageShell } from '../components/PageShell';
 import { SectionCard } from '../components/SectionCard';
 import { formFieldSx } from '../styles/formFieldSx';
 
+// poll every 3 seconds for up to 20 times
 const POLL_MS = 3000;
-const POLL_MAX = 5;
+const POLL_MAX = 20;
 
+// parse the JSON field
 function parseJsonField(label, raw, optional) {
   const trimmed = raw.trim();
   if (!trimmed) {
@@ -24,11 +26,13 @@ function parseJsonField(label, raw, optional) {
   }
 }
 
+// check to make sure the text looks like a curl command
 function looksLikeCurl(text) {
   const trimmed = text.trim().toLowerCase();
   return trimmed.startsWith('curl') || /\bcurl\b/.test(trimmed);
 }
 
+// parse the JSON result
 function parseJsonResult(value) {
   if (value == null) return null;
   if (typeof value === 'object') return value;
@@ -38,6 +42,7 @@ function parseJsonResult(value) {
   return JSON.parse(trimmed);
 }
 
+// render the JSON result view to make it look nice and easy to read
 function JsonResult({ label, value }) {
   value = parseJsonResult(value);
   return (
@@ -68,6 +73,7 @@ function JsonResult({ label, value }) {
   );
 }
 
+// render the YAML result view to make it look nice and easy to read
 function YamlRawResult({ label, value }) {
   return (
     <Box>
@@ -119,6 +125,7 @@ export function OpenApiFromCurlPage() {
   const [pollLoading, setPollLoading] = useState(false);
   const [pollError, setPollError] = useState(null);
 
+  // build the payload for the API request
   const buildPayload = () => {
     setError(null);
     setInfo(null);
@@ -152,6 +159,7 @@ export function OpenApiFromCurlPage() {
     return payload;
   };
 
+  // fetch the job from the API
   const fetchJob = useCallback(async () => {
     const data = await apiRequest(`/tools/openapi-from-curl?jobId=${encodeURIComponent(activeJobId)}`);
     return data;
@@ -197,6 +205,7 @@ export function OpenApiFromCurlPage() {
     };
   }, [activeJobId, fetchJob]);
 
+  // submit the job to the API and set the job ID
   const submitJob = async () => {
     setSubmitLoading(true);
     setSubmitError(null);
@@ -228,6 +237,7 @@ export function OpenApiFromCurlPage() {
     }
   };
 
+  // load the job from the API
   const handleLoadJob = (e) => {
     e?.preventDefault?.();
     const trimmed = jobIdInput.trim();

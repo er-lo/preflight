@@ -1,9 +1,7 @@
 import { Box, Typography } from '@mui/material';
 
-/**
- * Consistent tool page layout: hero title, optional subtitle, content area.
- */
-export function PageShell({ title, subtitle, eyebrow = 'Tool', children, maxContentWidth = 880 }) {
+// consistent page layout for the tools
+export function PageShell({ title, subtitle, children, maxContentWidth = 880 }) {
   return (
     <Box
       component="article"
