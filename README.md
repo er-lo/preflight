@@ -5,6 +5,7 @@ It analyzes API schemas, sample payloads, and internal requirements to detect br
 
 ## What Preflight Does
 
+### API Analysis
 Given:
 - An **OpenAPI (Swagger) schema**
 - A **sample JSON request/response payload**
@@ -17,12 +18,30 @@ Preflight will:
 - Highlight potential integration risks
 - Generate an analysis report
 
+### OpenAPI Spec Documentation Generation
+Given:
+- A **cURL request**
+- A **request payload**
+- A **response payload** 
+
+Preflight will:
+- Generate API specification document. (JSON & YAML)
+
+### Endpoint Guide
+Given:
+- A **OpenAPI (Swagger) schema**
+- A **desired data payload**
+- Additional context
+
+Preflight will:
+- Generate an endpoint guide
+
 ## Tech Stack
 
 ### Frontend
 - Vite
 - React
-- TailwindCSS
+- MaterialUI
 
 ### Backend
 - Node.js
