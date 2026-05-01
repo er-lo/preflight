@@ -1,5 +1,7 @@
 const { LOG_PREFIXES } = require('../constants/constants');
 
+// made a log tool so that everything prints out pretty
+// this is used to make the logs more readable and easier to understand
 const maxTagLength = Math.max(
   ...Object.values(LOG_PREFIXES).map(tag => tag.length)
 );

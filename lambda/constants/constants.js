@@ -1,3 +1,4 @@
+// constants for the lambda function to make it easier to read the logs and store values
 const LOG_PREFIXES = Object.freeze({
   AI_ANALYSIS: '[AI ANALYSIS]',
   OPENAPI_FROM_CURL: '[OPENAPI FROM CURL]',

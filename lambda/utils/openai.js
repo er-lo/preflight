@@ -1,6 +1,9 @@
 require('dotenv').config();
 const OpenAI = require('openai');
 
+// function to call the openai service and get a response
+// prompt is created in the src/jobs.js file
+// passed in here to avoid repeating the code in the src/jobs.js file
 async function callOpenAi(prompt) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {

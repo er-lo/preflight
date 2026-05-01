@@ -6,6 +6,8 @@ const { JOB_STATUS, LOG_PREFIXES } = require('../constants/constants');
 const { analysisPrompt, openapiFromCurlPrompt, endpointGuidePrompt } = require('../constants/prompts');
 const openAiUtil = require('../utils/openai');
 
+// function to process the analysis job
+// does db functions, openai calls, and returns the result
 async function processAnalysisJob(body) {
   log(LOG_PREFIXES.AI_ANALYSIS, `Processing analysis job ${body.jobId}`);
   const { jobId, schema, payload, requirements } = body;
@@ -51,6 +53,8 @@ async function processAnalysisJob(body) {
   }
 }
 
+// function to process the openapi from curl job
+// does db functions, openai calls, and returns the result
 async function processOpenApiFromCurlJob(body) {
   log(LOG_PREFIXES.OPENAPI_FROM_CURL, `Processing openapi from curl job ${body.jobId}`);
   const { jobId, curl, expectedRequestBody, expectedResponseBody } = body;
@@ -99,6 +103,8 @@ async function processOpenApiFromCurlJob(body) {
   }
 }
 
+// function to process the endpoint guide job
+// does db functions, openai calls, and returns the result
 async function processEndpointGuideJob(body) {
   log(LOG_PREFIXES.ENDPOINT_GUIDE, `Processing endpoint guide job ${body.jobId}`);
   const { jobId, apiDoc, dataGoal, extraContext } = body;

@@ -4,6 +4,7 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_UPDATE } = LOG_PREFIXES;
 
+// function to convert into the correct json format to be stored in the database
 function toJsonDbValue(value, fallback) {
   if (value === undefined || value === null) return JSON.stringify(fallback);
   if (typeof value === 'string') {
@@ -18,6 +19,7 @@ function toJsonDbValue(value, fallback) {
   return JSON.stringify(value);
 }
 
+// function to create a new analysis job record
 async function createAnalysisJobRecord(jobId) {
   log(DB_CREATE, `Creating analysis result record for job: ${jobId}.`)
   const pool = await getPostgresPool();
@@ -46,6 +48,7 @@ async function createAnalysisJobRecord(jobId) {
   }
 }
 
+// function to update the status of an analysis job depending on the status passed in
 async function updateAnalysisJobStatus(jobId, status) {
   const date = new Date();
   const startedAt = status === JOB_STATUS.IN_PROGRESS ? date : null;
@@ -72,6 +75,7 @@ async function updateAnalysisJobStatus(jobId, status) {
   }
 }
 
+// function to update the result of an analysis job
 async function updateAnalysisResult(jobId, riskLevel, summary, issuesJson, recommendationsJson) {
   const pool = await getPostgresPool();
   const client = await pool.connect();

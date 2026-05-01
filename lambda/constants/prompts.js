@@ -1,3 +1,5 @@
+// prompts for the lambda function to use for the openai calls
+// accepts arguments and creates the prompt for the openai call
 exports.analysisPrompt = (schema, payload, requirements) => `
 You are an API validation and risk assessment engine.
 

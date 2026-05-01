@@ -4,6 +4,7 @@ const { log } = require('../utils/log');
 
 const { DB_CREATE, DB_UPDATE } = LOG_PREFIXES;
 
+// function to create a new openapi from curl result record
 async function createOpenApiFromCurlJobRecord(jobId) {
   const pool = await getPostgresPool();
   const client = await pool.connect();
@@ -27,6 +28,7 @@ async function createOpenApiFromCurlJobRecord(jobId) {
   }
 }
 
+// function to update the status of an openapi from curl job depending on the status passed in
 async function updateOpenApiFromCurlJobStatus(jobId, status) {
   const date = new Date();
   const startedAt = status === JOB_STATUS.IN_PROGRESS ? date : null;
@@ -55,6 +57,7 @@ async function updateOpenApiFromCurlJobStatus(jobId, status) {
   }
 }
 
+// function to update the result of an openapi from curl job
 async function updateOpenApiFromCurlResult(jobId, resultJson, resultYaml) {
   const pool = await getPostgresPool();
   const client = await pool.connect();

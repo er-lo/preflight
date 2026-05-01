@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const { processAnalysisJob, processOpenApiFromCurlJob, processEndpointGuideJob } = require('./src/jobs');
 
+// function to safely parse the body of the event from the api gateway
 function safeJsonParse(value) {
   if (typeof value !== 'string') return { ok: false, value: null };
   try {
@@ -11,6 +12,7 @@ function safeJsonParse(value) {
   }
 }
 
+// function to decode the body of the event from the api gateway
 function decodeFunctionUrlBody(event) {
   if (!event || typeof event.body !== 'string') return null;
 
@@ -23,6 +25,7 @@ function decodeFunctionUrlBody(event) {
   return parsed.ok && parsed.value && typeof parsed.value === 'object' ? parsed.value : null;
 }
 
+// function to normalize the event from the api gateway makes it easier to work with
 function normalizeLambdaEvent(event) {
   if (Buffer.isBuffer(event)) {
     const parsed = safeJsonParse(event.toString('utf8'));
@@ -46,6 +49,7 @@ function normalizeLambdaEvent(event) {
   return {};
 }
 
+// function to return the response to the api gateway
 function response(statusCode, body) {
   return {
     statusCode,
@@ -54,8 +58,9 @@ function response(statusCode, body) {
   };
 }
 
-
-
+// entry point for the lambda function. 
+// this is the function that is called when the lambda function is invoked.
+// all three tools are processed here in one lambda for simplicity
 async function handler(event, context) {
   console.log(`ENVIRONMENT: ${process.env.NODE_ENVIRONMENT ?? '(unset)'}`);
 
@@ -67,6 +72,7 @@ async function handler(event, context) {
   const { jobType } = data ?? {};
 
   try {
+    // process the job based on the job type
     switch (jobType) {
       case 'analysis': {
         await processAnalysisJob(data);
